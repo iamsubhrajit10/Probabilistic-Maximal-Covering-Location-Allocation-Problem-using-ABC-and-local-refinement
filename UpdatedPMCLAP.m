@@ -5,24 +5,24 @@ global counters;
 counters=zeros(1,4);
 global cumProbabilites;
 cumProbabilites=zeros(1,4);
-for i=1:30
+for i=1:10
     tic;
     fit=PMCLAP_ABC(30,10,750,96,0.95,0);
     totalTime=totalTime+toc;
     sum=sum+fit;
     fitM(end+1)=fit;
 end
-avg=sum/30;
+avg=sum/10;
 fprintf("\nAverage Fitness: %f ",avg);
 fprintf("+\nMax Fitness: %f ",max(fitM));
 y=0;
-for i=1:30
+for i=1:10
     x=(fitM(1,i)-avg)^2;
     y=y+x;
 end
-standardDeviation=(y/30)^0.5;
+standardDeviation=(y/10)^0.5;
 fprintf("\nStandard Deviation: %f ",standardDeviation);
-fprintf("\nAverage Time: %f ",totalTime/30);
+fprintf("\nAverage Time: %f ",totalTime/10);
 counters
 
 
@@ -31,24 +31,24 @@ fitM=[];
 totalTime=0;
 counters=zeros(1,4);
 cumProbabilites=zeros(1,4);
-for i=1:30
+for i=1:10
     tic;
     fit=PMCLAP_ABC(30,10,750,96,0.95,1);
     totalTime=totalTime+toc;
     sum=sum+fit;
     fitM(end+1)=fit;
 end
-avg=sum/30;
+avg=sum/10;
 fprintf("\nAverage Fitness: %f ",avg);
 fprintf("+\nMax Fitness: %f ",max(fitM));
 y=0;
-for i=1:30
+for i=1:10
     x=(fitM(1,i)-avg)^2;
     y=y+x;
 end
-standardDeviation=(y/30)^0.5;
+standardDeviation=(y/10)^0.5;
 fprintf("\nStandard Deviation: %f ",standardDeviation);
-fprintf("\nAverage Time: %f ",totalTime/30);
+fprintf("\nAverage Time: %f ",totalTime/10);
 counters
 
 sum=0;
@@ -56,48 +56,48 @@ fitM=[];
 totalTime=0;
 counters=zeros(1,4);
 cumProbabilites=zeros(1,4);
-for i=1:30
+for i=1:10
     tic;
     fit=PMCLAP_ABC(30,10,750,96,0.95,2);
     totalTime=totalTime+toc;
     sum=sum+fit;
     fitM(end+1)=fit;
 end
-avg=sum/30;
+avg=sum/10;
 fprintf("\nAverage Fitness: %f ",avg);
 fprintf("+\nMax Fitness: %f ",max(fitM));
 y=0;
-for i=1:30
+for i=1:10
     x=(fitM(1,i)-avg)^2;
     y=y+x;
 end
-standardDeviation=(y/30)^0.5;
+standardDeviation=(y/10)^0.5;
 fprintf("\nStandard Deviation: %f ",standardDeviation);
-fprintf("\nAverage Time: %f ",totalTime/30);
+fprintf("\nAverage Time: %f ",totalTime/10);
 counters
 sum=0;
 fitM=[];
 totalTime=0;
 counters=zeros(1,4);
 cumProbabilites=zeros(1,4);
-for i=1:30
+for i=1:10
     tic;
     fit=PMCLAP_ABC(30,20,750,96,0.85,0);
     totalTime=totalTime+toc;
     sum=sum+fit;
     fitM(end+1)=fit;
 end
-avg=sum/30;
+avg=sum/10;
 fprintf("\nAverage Fitness: %f ",avg);
 fprintf("+\nMax Fitness: %f ",max(fitM));
 y=0;
-for i=1:30
+for i=1:10
     x=(fitM(1,i)-avg)^2;
     y=y+x;
 end
-standardDeviation=(y/30)^0.5;
+standardDeviation=(y/10)^0.5;
 fprintf("\nStandard Deviation: %f ",standardDeviation);
-fprintf("\nAverage Time: %f ",totalTime/30);
+fprintf("\nAverage Time: %f ",totalTime/10);
 counters
 
 sum=0;
@@ -105,24 +105,24 @@ fitM=[];
 totalTime=0;
 counters=zeros(1,4);
 cumProbabilites=zeros(1,4);
-for i=1:30
+for i=1:10
     tic;
     fit=PMCLAP_ABC(30,20,750,96,0.95,0);
     totalTime=totalTime+toc;
     sum=sum+fit;
     fitM(end+1)=fit;
 end
-avg=sum/30;
+avg=sum/10;
 fprintf("\nAverage Fitness: %f ",avg);
 fprintf("+\nMax Fitness: %f ",max(fitM));
 y=0;
-for i=1:30
+for i=1:10
     x=(fitM(1,i)-avg)^2;
     y=y+x;
 end
-standardDeviation=(y/30)^0.5;
+standardDeviation=(y/10)^0.5;
 fprintf("\nStandard Deviation: %f ",standardDeviation);
-fprintf("\nAverage Time: %f ",totalTime/30);
+fprintf("\nAverage Time: %f ",totalTime/10);
 counters
 
 sum=0;
@@ -130,24 +130,24 @@ fitM=[];
 totalTime=0;
 counters=zeros(1,4);
 cumProbabilites=zeros(1,4);
-for i=1:30
+for i=1:10
     tic;
     fit=PMCLAP_ABC(30,20,750,96,0.85,1);
     totalTime=totalTime+toc;
     sum=sum+fit;
     fitM(end+1)=fit;
 end
-avg=sum/30;
+avg=sum/10;
 fprintf("\nAverage Fitness: %f ",avg);
 fprintf("+\nMax Fitness: %f ",max(fitM));
 y=0;
-for i=1:30
+for i=1:10
     x=(fitM(1,i)-avg)^2;
     y=y+x;
 end
-standardDeviation=(y/30)^0.5;
+standardDeviation=(y/10)^0.5;
 fprintf("\nStandard Deviation: %f ",standardDeviation);
-fprintf("\nAverage Time: %f ",totalTime/30);
+fprintf("\nAverage Time: %f ",totalTime/10);
 counters
 
 sum=0;
@@ -155,24 +155,24 @@ fitM=[];
 totalTime=0;
 counters=zeros(1,4);
 cumProbabilites=zeros(1,4);
-for i=1:30
+for i=1:10
     tic;
     fit=PMCLAP_ABC(30,20,750,96,0.95,1);
     totalTime=totalTime+toc;
     sum=sum+fit;
     fitM(end+1)=fit;
 end
-avg=sum/30;
+avg=sum/10;
 fprintf("\nAverage Fitness: %f ",avg);
 fprintf("+\nMax Fitness: %f ",max(fitM));
 y=0;
-for i=1:30
+for i=1:10
     x=(fitM(1,i)-avg)^2;
     y=y+x;
 end
-standardDeviation=(y/30)^0.5;
+standardDeviation=(y/10)^0.5;
 fprintf("\nStandard Deviation: %f ",standardDeviation);
-fprintf("\nAverage Time: %f ",totalTime/30);
+fprintf("\nAverage Time: %f ",totalTime/10);
 counters
 
 
@@ -181,24 +181,24 @@ fitM=[];
 totalTime=0;
 counters=zeros(1,4);
 cumProbabilites=zeros(1,4);
-for i=1:30
+for i=1:10
     tic;
     fit=PMCLAP_ABC(30,20,750,96,0.85,2);
     totalTime=totalTime+toc;
     sum=sum+fit;
     fitM(end+1)=fit;
 end
-avg=sum/30;
+avg=sum/10;
 fprintf("\nAverage Fitness: %f ",avg);
 fprintf("+\nMax Fitness: %f ",max(fitM));
 y=0;
-for i=1:30
+for i=1:10
     x=(fitM(1,i)-avg)^2;
     y=y+x;
 end
-standardDeviation=(y/30)^0.5;
+standardDeviation=(y/10)^0.5;
 fprintf("\nStandard Deviation: %f ",standardDeviation);
-fprintf("\nAverage Time: %f ",totalTime/30);
+fprintf("\nAverage Time: %f ",totalTime/10);
 counters
 
 
@@ -207,24 +207,24 @@ fitM=[];
 totalTime=0;
 counters=zeros(1,4);
 cumProbabilites=zeros(1,4);
-for i=1:30
+for i=1:10
     tic;
     fit=PMCLAP_ABC(30,20,750,96,0.85,1);
     totalTime=totalTime+toc;
     sum=sum+fit;
     fitM(end+1)=fit;
 end
-avg=sum/30;
+avg=sum/10;
 fprintf("\nAverage Fitness: %f ",avg);
 fprintf("+\nMax Fitness: %f ",max(fitM));
 y=0;
-for i=1:30
+for i=1:10
     x=(fitM(1,i)-avg)^2;
     y=y+x;
 end
-standardDeviation=(y/30)^0.5;
+standardDeviation=(y/10)^0.5;
 fprintf("\nStandard Deviation: %f ",standardDeviation);
-fprintf("\nAverage Time: %f ",totalTime/30);
+fprintf("\nAverage Time: %f ",totalTime/10);
 counters
 
 
@@ -234,24 +234,24 @@ fitM=[];
 totalTime=0;
 counters=zeros(1,4);
 cumProbabilites=zeros(1,4);
-for i=1:30
+for i=1:10
     tic;
     fit=PMCLAP_ABC(30,50,750,96,0.85,0);
     totalTime=totalTime+toc;
     sum=sum+fit;
     fitM(end+1)=fit;
 end
-avg=sum/30;
+avg=sum/10;
 fprintf("\nAverage Fitness: %f ",avg);
 fprintf("+\nMax Fitness: %f ",max(fitM));
 y=0;
-for i=1:30
+for i=1:10
     x=(fitM(1,i)-avg)^2;
     y=y+x;
 end
-standardDeviation=(y/30)^0.5;
+standardDeviation=(y/10)^0.5;
 fprintf("\nStandard Deviation: %f ",standardDeviation);
-fprintf("\nAverage Time: %f ",totalTime/30);
+fprintf("\nAverage Time: %f ",totalTime/10);
 counters
 
 
@@ -260,24 +260,24 @@ fitM=[];
 totalTime=0;
 counters=zeros(1,4);
 cumProbabilites=zeros(1,4);
-for i=1:30
+for i=1:10
     tic;
     fit=PMCLAP_ABC(30,50,750,96,0.85,1);
     totalTime=totalTime+toc;
     sum=sum+fit;
     fitM(end+1)=fit;
 end
-avg=sum/30;
+avg=sum/10;
 fprintf("\nAverage Fitness: %f ",avg);
 fprintf("+\nMax Fitness: %f ",max(fitM));
 y=0;
-for i=1:30
+for i=1:10
     x=(fitM(1,i)-avg)^2;
     y=y+x;
 end
-standardDeviation=(y/30)^0.5;
+standardDeviation=(y/10)^0.5;
 fprintf("\nStandard Deviation: %f ",standardDeviation);
-fprintf("\nAverage Time: %f ",totalTime/30);
+fprintf("\nAverage Time: %f ",totalTime/10);
 counters
 
 
@@ -286,24 +286,24 @@ fitM=[];
 totalTime=0;
 counters=zeros(1,4);
 cumProbabilites=zeros(1,4);
-for i=1:30
+for i=1:10
     tic;
     fit=PMCLAP_ABC(30,50,750,96,0.85,2);
     totalTime=totalTime+toc;
     sum=sum+fit;
     fitM(end+1)=fit;
 end
-avg=sum/30;
+avg=sum/10;
 fprintf("\nAverage Fitness: %f ",avg);
 fprintf("+\nMax Fitness: %f ",max(fitM));
 y=0;
-for i=1:30
+for i=1:10
     x=(fitM(1,i)-avg)^2;
     y=y+x;
 end
-standardDeviation=(y/30)^0.5;
+standardDeviation=(y/10)^0.5;
 fprintf("\nStandard Deviation: %f ",standardDeviation);
-fprintf("\nAverage Time: %f ",totalTime/30);
+fprintf("\nAverage Time: %f ",totalTime/10);
 counters
 function[fitmax]=PMCLAP_ABC(P,K,r,mu,alpha,b)
     x=mu*((1-alpha)^(1/(b+2)));
@@ -316,36 +316,35 @@ function[fitmax]=PMCLAP_ABC(P,K,r,mu,alpha,b)
     population=initialize(P,K,nrows);
     epochs=1;
     fitness=computePopulationFitness(population(:,:,epochs),P,K,r,demand,distance,nrows,x,epochs);
-    fitM=[];
-    fitM(end+1,:)=fitness;
+    fitM=zeros(1000,P,1);
+    fitM(1,:,:)=fitness;
+    counter=zeros(1,P);
     while epochs<=1000 && notTerminated(fitM,epochs)                
         currentPop=population(:,:,epochs);
         epochs=epochs+1;
         eN=enhanceSolutionVector(currentPop, P, K, distance, demand, r, nrows, x,epochs);
-        eB=employeedBees(eN,P,K,distance,demand,r,nrows,x,epochs);
-        oB=onlookerBees(eB,P,K,distance,demand,r,nrows,x,epochs);
-        if epochs<=50
-            RP=refinement(oB,P,K,r,distance,nrows,demand,data,x,epochs);
-        else
-            RP=oB;
-        end
-        population(:,:,epochs)=RP;
-        SP=scoutBees(population,epochs,P,K,distance,demand,r,nrows,x,epochs);
+        [eB,counter]=employeedBees(eN,P,K,distance,demand,r,nrows,x,epochs,counter);
+        [oB,counter]=onlookerBees(eB,P,K,distance,demand,r,nrows,x,epochs,counter);
+% %         if epochs<=50
+% %             RP=refinement(oB,P,K,r,distance,nrows,demand,data,x,epochs);
+% %         else
+%         RP=oB;
+        [SP,counter]=scoutBees(oB,P,K,distance,demand,r,nrows,x,epochs,counter);
         population(:,:,epochs)=SP;
         [population(:,:,epochs),fitness]=createNextGenerationFrom(population(:,:,epochs),currentPop,P,K,r,demand,distance,nrows,x,epochs);
-        fitM(end+1,:)=fitness;
+        fitM(epochs,:,:)=fitness;
     end
     fitmax=max(fitM(:));
     fprintf("\nRadius: %d, Facilities opened: %d",r,K);
     fprintf("\nEpochs: %d",epochs);
     fprintf("\nFitness: %f ",fitmax);
-%     'Facility Cordinates',data(population(j,:,i),:)
+    'Facility Coordinates',data(population(1,:,epochs),1:2)
 end
 
 
 function[flag]=notTerminated(fitM,n)
     flag=true;
-    if n <= 150
+    if n <= 100
         return;
     end
     mx=max(fitM(n,:));
@@ -380,7 +379,7 @@ function [population] = enhanceSolutionVector(population, P, K, distance, demand
         end
     end
 end
-function [population] = employeedBees(population, P, K, distance, demand, r, nrows, x,epochs)
+function [population,counter] = employeedBees(population, P, K, distance, demand, r, nrows, x,epochs,counter)
     newPopulation = population;
     for i=1:P
         for j=1:K
@@ -388,104 +387,67 @@ function [population] = employeedBees(population, P, K, distance, demand, r, nro
             while k == i
                 k = randi(P);  % Generate a random number between 1 and P
             end
-            phi=randi(3)-2;
+            phi=randi([-1 1]);
             v=round(population(i,j)+phi*(population(i,j)-population(k,j)));
-            if v>0 && v<=818
+            if v>0 && v<=nrows
                 newPopulation(i,j) = v;
             end
         end
-
         if getFitness(newPopulation(i,:), K, r, demand, distance, nrows, x,epochs) > getFitness(population(i,:), K, r, demand, distance, nrows, x,epochs)
               population(i,:) = newPopulation(i,:);
+        else
+              counter(1,i)=counter(1,i)+1;
         end
     end
 end
 
 
 
-function [chosenPopulation] = onlookerBees(population, P, K, distance, demand, r, nrows, x,epochs)
+function [newPopulation,counter] = onlookerBees(population, P, K, distance, demand, r, nrows, x,epochs,counter)
     chosenPopulation = zeros(P, K);
     probabilities = zeros(P, 1);
-    
+    newPopulation=population;
     sumFitness = sum(computePopulationFitness(population,P,K,r,demand,distance,nrows,x,epochs));
-    probabilities(1) = getFitness(population(1,:), K, r, demand, distance, nrows, x,epochs) / sumFitness;
-    for i = 2:P
-       probabilities(i) =probabilities(i-1) +  (getFitness(population(i,:), K, r, demand, distance, nrows, x,epochs) / sumFitness);
+    for i = 1:P
+       probabilities(i) =getFitness(population(i,:), K, r, demand, distance, nrows, x,epochs) / sumFitness;
     end
+    cumulativeProb=cumsum(probabilities);
     for k = 1:P
-        i = find(probabilities >= rand(), 1);
+        i = find(cumulativeProb >= rand(), 1);
         if ~(i==0)
-            chosenPopulation(k, :) = population(i, :);
+            for q=1:K
+                j=i;
+                while j == i
+                    j = randi(P);  % Generate a random number between 1 and P
+                end
+                phi=randi([-1 1]);
+                v=round(population(i,q)+phi*(population(i,q)-population(j,q)));
+                if v>0 && v<=nrows
+                    chosenPopulation(k, :) = v;
+                end
+            end
+            if getFitness(chosenPopulation(k,:), K, r, demand, distance, nrows, x,epochs) >= getFitness(population(k,:), K, r, demand, distance, nrows, x,epochs)
+              newPopulation(i,:) = chosenPopulation(k,:);
+            else
+              counter(1,i)=counter(1,i)+1;
+            end
         else
             chosenPopulation(k, :) = population(k, :);
         end
     end
-    
-    newPopulation = chosenPopulation;
+end
+
+function [population,counter] = scoutBees(population,P, K, distance, demand, r, nrows, x,epochs,counter)
+    L = 20;
     for i=1:P
-        for j=1:K
-            k=i;
-            while k == i
-                k = randi(P);  % Generate a random number between 1 and P
-            end
-            phi=randi(3)-2;
-            v=round(chosenPopulation(i,j)+phi*(chosenPopulation(i,j)-chosenPopulation(k,j)));
-            if v>0 && v<=818
-                newPopulation(i,j) = v;
-            end
-        end
-        if getFitness(newPopulation(i,:), K, r, demand, distance, nrows, x,epochs) > getFitness(chosenPopulation, K, r, demand, distance, nrows, x,epochs)
-              chosenPopulation(i,:) = newPopulation(i,:);
+        if counter(1,i)> L
+            population(i, :) = randperm(nrows,K);
+            counter(1,i)=0;
         end
     end
+
 end
 
-function [pop] = scoutBees(population, n, P, K, distance, demand, r, nrows, x,epochs)
-    max_no_improve = 20;
-    if n > max_no_improve
-        for i = 1:P
-            fitness = getFitness(population(i, :, n), K, r, demand, distance, nrows, x,epochs);
-            no_improve = 0;
-            for j = (n-1):-1:(n-max_no_improve)
-                if fitness > getFitness(population(i, :, j), K, r, demand, distance, nrows, x,epochs)
-                    no_improve = no_improve + 1;
-                else
-                    break;
-                end
-            end
-            if no_improve == max_no_improve
-                population(i, :, n) = randi([1 nrows], 1, K);
-            end
-        end
-    end
-    pop = population(:,:,n);
-end
-
-function RP = refinement(population, P, K, r, distance, nrows, demand, data, x, epochs)
-    RP = population;
-    for i = 1:K
-        cluster = find(population == i); % Find the customers assigned to facility i
-        if ~isempty(cluster)
-            facility = data(i, 1:2); % Facility coordinates
-            clusterData = data(cluster, :); % Cluster data
-
-            % Calculate distances from each customer in the cluster to all other customers
-            distances = pdist2(clusterData(:, 1:2), clusterData(:, 1:2));
-
-            % Calculate the weighted sum of distances for each customer
-            weightedDistances = sum(distances .* repmat(demand(cluster), 1, size(distances, 2)));
-
-            % Find the customer with the minimum weighted sum of distances
-            [~, index] = min(weightedDistances);
-
-            % Update the facility location with the coordinates of the selected customer
-            RP(i) = cluster(index);
-        else
-            % If the cluster is empty, assign the facility to a random customer
-            RP(i) = randi(nrows);
-        end
-    end
-end
 
 
 
@@ -512,8 +474,8 @@ function[fitness]=getFitness(solution,K,r,demand,distance,nrows,x,epochs)
    global counters;
    global cumProbabilites;
    
-   if epochs<30
-        fit1=getFitness1(solution,K,r,demand,distance,nrows,x);
+   if epochs<50
+        fit1=getFitness1(solution,K,r,demand,distance,nrows,x,epochs);
         fit2=getFitness2(solution,K,r,demand,distance,nrows,x);
         fit3=getFitness3(solution,K,r,demand,distance,nrows,x);
         fit4=getFitness4(solution,K,r,demand,distance,nrows,x);
@@ -523,7 +485,7 @@ function[fitness]=getFitness(solution,K,r,demand,distance,nrows,x,epochs)
                % initialize eps to a small positive constant
         eps = 1e-10;
 
-        if epochs ==30
+        if epochs ==50
             % compute probabilities using roulette wheel selection
             total = sum(counters(1,:));
             probabilites(1) = (counters(1,1) + eps) / (total + 4*eps);
@@ -539,7 +501,7 @@ function[fitness]=getFitness(solution,K,r,demand,distance,nrows,x,epochs)
         randProb = rand();
         if randProb < cumProbabilites(1)
             index=1;
-            fitness = getFitness1(solution, K, r, demand, distance, nrows, x);
+            fitness = getFitness1(solution, K, r, demand, distance, nrows, x,epochs);
         elseif randProb < cumProbabilites(2)
             index=2;
             fitness = getFitness2(solution, K, r, demand, distance, nrows, x);
@@ -556,7 +518,7 @@ function[fitness]=getFitness(solution,K,r,demand,distance,nrows,x,epochs)
        counters(1,index)=counters(1,index)+1;
    end
 end
-function[fitness]=getFitness1(solution,K,r,demand,distance,nrows,x)
+function[fitness]=getFitness1(solution,K,r,demand,distance,nrows,x,epochs)
     val=0;
     yM=zeros(K,1);
     allocation=zeros(1,nrows);

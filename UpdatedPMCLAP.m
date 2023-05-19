@@ -7,7 +7,7 @@ global cumProbabilites;
 cumProbabilites=zeros(1,4);
 for i=1:10
     tic;
-    fit=PMCLAP_ABC(30,10,750,96,0.95,0);
+    fit=PMCLAP_ABC(30,10,250,96,0.85,0);
     totalTime=totalTime+toc;
     sum=sum+fit;
     fitM(end+1)=fit;
@@ -33,7 +33,7 @@ counters=zeros(1,4);
 cumProbabilites=zeros(1,4);
 for i=1:10
     tic;
-    fit=PMCLAP_ABC(30,10,750,96,0.95,1);
+    fit=PMCLAP_ABC(30,10,250,96,0.95,0);
     totalTime=totalTime+toc;
     sum=sum+fit;
     fitM(end+1)=fit;
@@ -58,7 +58,7 @@ counters=zeros(1,4);
 cumProbabilites=zeros(1,4);
 for i=1:10
     tic;
-    fit=PMCLAP_ABC(30,10,750,96,0.95,2);
+    fit=PMCLAP_ABC(30,10,250,96,0.85,1);
     totalTime=totalTime+toc;
     sum=sum+fit;
     fitM(end+1)=fit;
@@ -82,32 +82,7 @@ counters=zeros(1,4);
 cumProbabilites=zeros(1,4);
 for i=1:10
     tic;
-    fit=PMCLAP_ABC(30,20,750,96,0.85,0);
-    totalTime=totalTime+toc;
-    sum=sum+fit;
-    fitM(end+1)=fit;
-end
-avg=sum/10;
-fprintf("\nAverage Fitness: %f ",avg);
-fprintf("+\nMax Fitness: %f ",max(fitM));
-y=0;
-for i=1:10
-    x=(fitM(1,i)-avg)^2;
-    y=y+x;
-end
-standardDeviation=(y/10)^0.5;
-fprintf("\nStandard Deviation: %f ",standardDeviation);
-fprintf("\nAverage Time: %f ",totalTime/10);
-counters
-
-sum=0;
-fitM=[];
-totalTime=0;
-counters=zeros(1,4);
-cumProbabilites=zeros(1,4);
-for i=1:10
-    tic;
-    fit=PMCLAP_ABC(30,20,750,96,0.95,0);
+    fit=PMCLAP_ABC(30,10,250,96,0.95,1);
     totalTime=totalTime+toc;
     sum=sum+fit;
     fitM(end+1)=fit;
@@ -132,7 +107,7 @@ counters=zeros(1,4);
 cumProbabilites=zeros(1,4);
 for i=1:10
     tic;
-    fit=PMCLAP_ABC(30,20,750,96,0.85,1);
+    fit=PMCLAP_ABC(30,10,250,96,0.85,2);
     totalTime=totalTime+toc;
     sum=sum+fit;
     fitM(end+1)=fit;
@@ -157,7 +132,32 @@ counters=zeros(1,4);
 cumProbabilites=zeros(1,4);
 for i=1:10
     tic;
-    fit=PMCLAP_ABC(30,20,750,96,0.95,1);
+    fit=PMCLAP_ABC(30,20,250,96,0.85,0);
+    totalTime=totalTime+toc;
+    sum=sum+fit;
+    fitM(end+1)=fit;
+end
+avg=sum/10;
+fprintf("\nAverage Fitness: %f ",avg);
+fprintf("+\nMax Fitness: %f ",max(fitM));
+y=0;
+for i=1:10
+    x=(fitM(1,i)-avg)^2;
+    y=y+x;
+end
+standardDeviation=(y/10)^0.5;
+fprintf("\nStandard Deviation: %f ",standardDeviation);
+fprintf("\nAverage Time: %f ",totalTime/10);
+counters
+
+sum=0;
+fitM=[];
+totalTime=0;
+counters=zeros(1,4);
+cumProbabilites=zeros(1,4);
+for i=1:10
+    tic;
+    fit=PMCLAP_ABC(30,20,250,96,0.95,0);
     totalTime=totalTime+toc;
     sum=sum+fit;
     fitM(end+1)=fit;
@@ -179,64 +179,12 @@ counters
 sum=0;
 fitM=[];
 totalTime=0;
+global counters;
 counters=zeros(1,4);
 cumProbabilites=zeros(1,4);
 for i=1:10
     tic;
-    fit=PMCLAP_ABC(30,20,750,96,0.85,2);
-    totalTime=totalTime+toc;
-    sum=sum+fit;
-    fitM(end+1)=fit;
-end
-avg=sum/10;
-fprintf("\nAverage Fitness: %f ",avg);
-fprintf("+\nMax Fitness: %f ",max(fitM));
-y=0;
-for i=1:10
-    x=(fitM(1,i)-avg)^2;
-    y=y+x;
-end
-standardDeviation=(y/10)^0.5;
-fprintf("\nStandard Deviation: %f ",standardDeviation);
-fprintf("\nAverage Time: %f ",totalTime/10);
-counters
-
-
-sum=0;
-fitM=[];
-totalTime=0;
-counters=zeros(1,4);
-cumProbabilites=zeros(1,4);
-for i=1:10
-    tic;
-    fit=PMCLAP_ABC(30,20,750,96,0.85,1);
-    totalTime=totalTime+toc;
-    sum=sum+fit;
-    fitM(end+1)=fit;
-end
-avg=sum/10;
-fprintf("\nAverage Fitness: %f ",avg);
-fprintf("+\nMax Fitness: %f ",max(fitM));
-y=0;
-for i=1:10
-    x=(fitM(1,i)-avg)^2;
-    y=y+x;
-end
-standardDeviation=(y/10)^0.5;
-fprintf("\nStandard Deviation: %f ",standardDeviation);
-fprintf("\nAverage Time: %f ",totalTime/10);
-counters
-
-
-
-sum=0;
-fitM=[];
-totalTime=0;
-counters=zeros(1,4);
-cumProbabilites=zeros(1,4);
-for i=1:10
-    tic;
-    fit=PMCLAP_ABC(30,50,750,96,0.85,0);
+    fit=PMCLAP_ABC(30,20,250,96,0.85,1);
     totalTime=totalTime+toc;
     sum=sum+fit;
     fitM(end+1)=fit;
@@ -262,7 +210,34 @@ counters=zeros(1,4);
 cumProbabilites=zeros(1,4);
 for i=1:10
     tic;
-    fit=PMCLAP_ABC(30,50,750,96,0.85,1);
+    fit=PMCLAP_ABC(30,20,250,96,0.95,1);
+    totalTime=totalTime+toc;
+    sum=sum+fit;
+    fitM(end+1)=fit;
+end
+avg=sum/10;
+fprintf("\nAverage Fitness: %f ",avg);
+fprintf("+\nMax Fitness: %f ",max(fitM));
+y=0;
+for i=1:10
+    x=(fitM(1,i)-avg)^2;
+    y=y+x;
+end
+standardDeviation=(y/10)^0.5;
+fprintf("\nStandard Deviation: %f ",standardDeviation);
+fprintf("\nAverage Time: %f ",totalTime/10);
+counters
+
+
+
+sum=0;
+fitM=[];
+totalTime=0;
+counters=zeros(1,4);
+cumProbabilites=zeros(1,4);
+for i=1:10
+    tic;
+    fit=PMCLAP_ABC(30,20,250,96,0.85,2);
     totalTime=totalTime+toc;
     sum=sum+fit;
     fitM(end+1)=fit;
@@ -288,7 +263,7 @@ counters=zeros(1,4);
 cumProbabilites=zeros(1,4);
 for i=1:10
     tic;
-    fit=PMCLAP_ABC(30,50,750,96,0.85,2);
+    fit=PMCLAP_ABC(30,20,250,96,0.95,2);
     totalTime=totalTime+toc;
     sum=sum+fit;
     fitM(end+1)=fit;
@@ -305,9 +280,11 @@ standardDeviation=(y/10)^0.5;
 fprintf("\nStandard Deviation: %f ",standardDeviation);
 fprintf("\nAverage Time: %f ",totalTime/10);
 counters
+
+
 function[fitmax]=PMCLAP_ABC(P,K,r,mu,alpha,b)
     x=mu*((1-alpha)^(1/(b+2)));
-    data=readmatrix("C:\MCLP_GA\818.txt");         %Data Set Coordinate file path
+    data=readmatrix("C:\MCLP_GA\324.txt");         %Data Set Coordinate file path
     %file can be downloaded from: http://www.lac.inpe.br/~lorena/instances/mcover/Coord/coord818.txt
     len=size(data);                                 
     nrows=len(1);
@@ -322,23 +299,20 @@ function[fitmax]=PMCLAP_ABC(P,K,r,mu,alpha,b)
     while epochs<=1000 && notTerminated(fitM,epochs)                
         currentPop=population(:,:,epochs);
         epochs=epochs+1;
-        eN=enhanceSolutionVector(currentPop, P, K, distance, demand, r, nrows, x,epochs);
-        [eB,counter]=employeedBees(eN,P,K,distance,demand,r,nrows,x,epochs,counter);
+        [eB,counter]=employeedBees(currentPop,P,K,distance,demand,r,nrows,x,epochs,counter);
         [oB,counter]=onlookerBees(eB,P,K,distance,demand,r,nrows,x,epochs,counter);
-% %         if epochs<=50
-% %             RP=refinement(oB,P,K,r,distance,nrows,demand,data,x,epochs);
-% %         else
-%         RP=oB;
         [SP,counter]=scoutBees(oB,P,K,distance,demand,r,nrows,x,epochs,counter);
-        population(:,:,epochs)=SP;
-        [population(:,:,epochs),fitness]=createNextGenerationFrom(population(:,:,epochs),currentPop,P,K,r,demand,distance,nrows,x,epochs);
-        fitM(epochs,:,:)=fitness;
+%         population(:,:,epochs)=SP;
+        [modifiedPop,~]=createNextGenerationFrom(SP,currentPop,P,K,r,demand,distance,nrows,x,epochs);
+        eN=enhanceSolutionVector(modifiedPop, P, K, distance, demand, r, nrows, x,epochs);
+        [ population(:,:,epochs),fitness]=createNextGenerationFrom(eN,modifiedPop,P,K,r,demand,distance,nrows,x,epochs);
+        fitM(epochs,:,:)=fitness;     
     end
     fitmax=max(fitM(:));
     fprintf("\nRadius: %d, Facilities opened: %d",r,K);
     fprintf("\nEpochs: %d",epochs);
     fprintf("\nFitness: %f ",fitmax);
-    'Facility Coordinates',data(population(1,:,epochs),1:2)
+    'Facility Indices',population(1,:,epochs)
 end
 
 
@@ -393,7 +367,7 @@ function [population,counter] = employeedBees(population, P, K, distance, demand
                 newPopulation(i,j) = v;
             end
         end
-        if getFitness(newPopulation(i,:), K, r, demand, distance, nrows, x,epochs) >= getFitness(population(i,:), K, r, demand, distance, nrows, x,epochs)
+        if getFitness(newPopulation(i,:), K, r, demand, distance, nrows, x,epochs) > getFitness(population(i,:), K, r, demand, distance, nrows, x,epochs)
               population(i,:) = newPopulation(i,:);
         else
               counter(1,i)=counter(1,i)+1;
@@ -404,7 +378,7 @@ end
 
 
 function [newPopulation,counter] = onlookerBees(population, P, K, distance, demand, r, nrows, x,epochs,counter)
-    chosenPopulation = zeros(P, K);
+    chosenPopulation = population;
     probabilities = zeros(P, 1);
     newPopulation=population;
     sumFitness = sum(computePopulationFitness(population,P,K,r,demand,distance,nrows,x,epochs));
@@ -447,12 +421,6 @@ function [population,counter] = scoutBees(population,P, K, distance, demand, r, 
     end
 
 end
-
-
-
-
-
-
 
 
 function [pool,fitness] = createNextGenerationFrom(population, T, P, K, r, demand, distance, nrows, x,epochs)

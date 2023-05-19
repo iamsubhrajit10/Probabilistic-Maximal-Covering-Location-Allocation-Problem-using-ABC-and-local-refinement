@@ -393,7 +393,7 @@ function [population,counter] = employeedBees(population, P, K, distance, demand
                 newPopulation(i,j) = v;
             end
         end
-        if getFitness(newPopulation(i,:), K, r, demand, distance, nrows, x,epochs) > getFitness(population(i,:), K, r, demand, distance, nrows, x,epochs)
+        if getFitness(newPopulation(i,:), K, r, demand, distance, nrows, x,epochs) >= getFitness(population(i,:), K, r, demand, distance, nrows, x,epochs)
               population(i,:) = newPopulation(i,:);
         else
               counter(1,i)=counter(1,i)+1;

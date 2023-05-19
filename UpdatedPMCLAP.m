@@ -48,6 +48,7 @@ function[fitmax]=PMCLAP_ABC(P,K,r,mu,alpha,b,increment,instance)
         [eB,counter]=employeedBees(currentPop,P,K,distance,demand,r,nrows,x,epochs,counter);
         [oB,counter]=onlookerBees(eB,P,K,distance,demand,r,nrows,x,epochs,counter);
         [SP,counter]=scoutBees(oB,P,K,distance,demand,r,nrows,x,epochs,counter);
+%         population(:,:,epochs)=SP;
         [modifiedPop,~]=createNextGenerationFrom(SP,currentPop,P,K,r,demand,distance,nrows,x,epochs);
         eN=enhanceSolutionVector(modifiedPop, P, K, distance, demand, r, nrows, x,epochs);
         [ population(:,:,epochs),fitness,allocationPopulation]=createNextGenerationFrom(eN,modifiedPop,P,K,r,demand,distance,nrows,x,epochs);
@@ -115,7 +116,7 @@ function [population] = initialize(P,K,nrows)
     end
 end
 function [population] = enhanceSolutionVector(population, P, K, distance, demand, r, nrows, x,epochs)
-    N = 82;
+    N =round(nrows/10);
     for i = 1:P
         for j = 1:K
             neighbours = getNeighbours(population(i,j), N, distance, nrows);
@@ -187,7 +188,7 @@ function [newPopulation,counter] = onlookerBees(population, P, K, distance, dema
 end
 
 function [population,counter] = scoutBees(population,P, K, distance, demand, r, nrows, x,epochs,counter)
-    L = floor(0.1*K*P);
+    L = floor(0.6*K*P);
     for i=1:P
         if counter(1,i)> L
             population(i, :) = randperm(nrows,K);

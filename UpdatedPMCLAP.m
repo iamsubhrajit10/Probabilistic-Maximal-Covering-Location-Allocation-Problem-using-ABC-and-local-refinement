@@ -2,13 +2,13 @@ sum=0;
 fitM=[];
 totalTime=0;
 global counters;
-counters=zeros(1,4);
 global cumProbabilites;
+counters=zeros(1,3);
 cumProbabilites=zeros(1,4);
-instance_number=1;
+instance_number=5;
 for i=1:10
     tic;
-    fit=PMCLAP_ABC(30,10,250,96,0.85,0,i,instance_number);
+    fit=PMCLAP_ABC(20,20,750,96,0.85,0,i,instance_number);
     totalTime=totalTime+toc;
     sum=sum+fit;
     fitM(end+1)=fit;
@@ -28,9 +28,10 @@ counters
 
 
 
+
 function[fitmax]=PMCLAP_ABC(P,K,r,mu,alpha,b,increment,instance)
     x=mu*((1-alpha)^(1/(b+2)));
-    data=readmatrix("C:\MCLP_GA\324.txt");         %Data Set Coordinate file path
+    data=readmatrix("C:\MCLP_GA\818.txt");         %Data Set Coordinate file path
     %file can be downloaded from: http://www.lac.inpe.br/~lorena/instances/mcover/Coord/coord818.txt
     len=size(data);                                 
     nrows=len(1);
@@ -48,7 +49,6 @@ function[fitmax]=PMCLAP_ABC(P,K,r,mu,alpha,b,increment,instance)
         [eB,counter]=employeedBees(currentPop,P,K,distance,demand,r,nrows,x,epochs,counter);
         [oB,counter]=onlookerBees(eB,P,K,distance,demand,r,nrows,x,epochs,counter);
         [SP,counter]=scoutBees(oB,P,K,distance,demand,r,nrows,x,epochs,counter);
-%         population(:,:,epochs)=SP;
         [modifiedPop,~]=createNextGenerationFrom(SP,currentPop,P,K,r,demand,distance,nrows,x,epochs);
         eN=enhanceSolutionVector(modifiedPop, P, K, distance, demand, r, nrows, x,epochs);
         [ population(:,:,epochs),fitness,allocationPopulation]=createNextGenerationFrom(eN,modifiedPop,P,K,r,demand,distance,nrows,x,epochs);
@@ -59,7 +59,7 @@ function[fitmax]=PMCLAP_ABC(P,K,r,mu,alpha,b,increment,instance)
     fprintf("\nEpochs: %d",epochs);
     fprintf("\nFitness: %f ",fitmax);
     
-    baseDirectory = 'C:\MCLP_GA\324R\';
+    baseDirectory = 'C:\MCLP_GA\818R\';
     instanceName = num2str(instance);
     indiceFileName = 'indice_data';
     subDirectory = fullfile(baseDirectory, instanceName);
@@ -94,7 +94,7 @@ end
 
 function[flag]=notTerminated(fitM,n)
     flag=true;
-    if n <= 100
+    if n <150
         return;
     end
     mx=max(fitM(n,:));
@@ -188,7 +188,7 @@ function [newPopulation,counter] = onlookerBees(population, P, K, distance, dema
 end
 
 function [population,counter] = scoutBees(population,P, K, distance, demand, r, nrows, x,epochs,counter)
-    L = floor(0.6*K*P);
+    L = floor(0.1*K*P);
     for i=1:P
         if counter(1,i)> L
             population(i, :) = randperm(nrows,K);
@@ -218,11 +218,12 @@ end
 function[fitness,allocationMatrix]=getFitness(solution,K,r,demand,distance,nrows,x,epochs)
    global counters;
    global cumProbabilites;
-   tempAllocation=zeros(1,2,nrows);
+   tempAllocation=zeros(1,3,nrows);
    if epochs<50
         [fit1,tempAllocation(1,1,:)]=getFitness1(solution,K,r,demand,distance,nrows,x,epochs);
         [fit2,tempAllocation(1,2,:)]=getFitness2(solution,K,r,demand,distance,nrows,x);
-        [fitness,i]=max([fit1 fit2]);
+        [fit3,tempAllocation(1,3,:)]=getFitness3(solution,K,r,demand,distance,nrows,x);
+        [fitness,i]=max([fit1 fit2 fit3]);
         allocationMatrix=tempAllocation(1,i,:);
         counters(1,i)=counters(1,i)+1;
    else
@@ -234,6 +235,7 @@ function[fitness,allocationMatrix]=getFitness(solution,K,r,demand,distance,nrows
             total = sum(counters(1,:));
             probabilites(1) = (counters(1,1) + eps) / (total + 4*eps);
             probabilites(2) = (counters(1,2) + eps) / (total + 4*eps); 
+            probabilites(3) = (counters(1,3) + eps) / (total + 4*eps); 
 
             % compute cumulative probabilities
             cumProbabilites = cumsum(probabilites);
@@ -248,6 +250,9 @@ function[fitness,allocationMatrix]=getFitness(solution,K,r,demand,distance,nrows
         elseif randProb < cumProbabilites(2)
             index=2;
             [fitness,allocationMatrix] = getFitness2(solution, K, r, demand, distance, nrows, x);
+        elseif randProb < cumProbabilites(3)
+            index=3;
+            [fitness,allocationMatrix] = getFitness3(solution, K, r, demand, distance, nrows, x);
         else
             index=1;
             [fitness,allocationMatrix] = getFitness1(solution, K, r, demand, distance, nrows, x);
@@ -283,6 +288,28 @@ function[fitness,allocation]=getFitness2(solution,K,r,demand,distance,nrows,x)
                 allocation(1,i)=solution(facilityNo);
             end
         end
+    end
+    fitness=val;
+end
+
+function[fitness,allocation]=getFitness3(solution,K,r,demand,distance,nrows,x)
+    val=0;
+    yM=zeros(K,1);
+    allocation=zeros(1,nrows);  
+    for j=1:nrows
+        weightedMatrix=zeros(1,K);
+        f=0.01*demand(j);
+        for i=1:K
+            if ~allocation(1,j) && (yM(i,1)+f)<=x && distance(solution(i),j)<=r
+                weightedMatrix(1,i)=demand(j)/distance(solution(i),j);
+            end
+        end
+            [maxW,index]=max(weightedMatrix(1,:));
+            if maxW ~=0
+                allocation(1,j)=solution(index);
+                val=val+demand(j);
+                yM(index,1)=yM(index,1)+f;
+            end
     end
     fitness=val;
 end
@@ -333,6 +360,7 @@ function[yM,facilityNo,flag]=getLessCongestedFacility(solution,customer,distance
       flag=true;
   end
 end
+
 
 function [neighbour] = getNeighbours(facility, N, distance, nrows)
     d = Inf(nrows, 1);

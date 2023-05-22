@@ -1,3 +1,110 @@
+% sum=0;
+% fitM=[];
+% totalTime=0;
+% global counters;
+% global cumProbabilites;
+% counters=zeros(1,3);
+% cumProbabilites=zeros(1,4);
+% instance_number=1;
+% for i=1:10
+%     tic;
+%     fit=PMCLAP_ABC(20,10,750,96,0.95,0,i,instance_number);
+%     totalTime=totalTime+toc;
+%     sum=sum+fit;
+%     fitM(end+1)=fit;
+% end
+% avg=sum/10;
+% fprintf("\nAverage Fitness: %f ",avg);
+% fprintf("+\nMax Fitness: %f ",max(fitM));
+% y=0;
+% for i=1:10
+%     x=(fitM(1,i)-avg)^2;
+%     y=y+x;
+% end
+% standardDeviation=(y/10)^0.5;
+% fprintf("\nStandard Deviation: %f ",standardDeviation);
+% fprintf("\nAverage Time: %f ",totalTime/10);
+% counters
+% 
+% sum=0;
+% fitM=[];
+% totalTime=0;
+% counters=zeros(1,3);
+% cumProbabilites=zeros(1,4);
+% instance_number=2;
+% for i=1:10
+%     tic;
+%     fit=PMCLAP_ABC(20,10,750,96,0.95,1,i,instance_number);
+%     totalTime=totalTime+toc;
+%     sum=sum+fit;
+%     fitM(end+1)=fit;
+% end
+% avg=sum/10;
+% fprintf("\nAverage Fitness: %f ",avg);
+% fprintf("+\nMax Fitness: %f ",max(fitM));
+% y=0;
+% for i=1:10
+%     x=(fitM(1,i)-avg)^2;
+%     y=y+x;
+% end
+% standardDeviation=(y/10)^0.5;
+% fprintf("\nStandard Deviation: %f ",standardDeviation);
+% fprintf("\nAverage Time: %f ",totalTime/10);
+% counters
+% 
+% sum=0;
+% fitM=[];
+% totalTime=0;
+% counters=zeros(1,3);
+% cumProbabilites=zeros(1,4);
+% instance_number=3;
+% for i=1:10
+%     tic;
+%     fit=PMCLAP_ABC(20,10,750,96,0.95,2,i,instance_number);
+%     totalTime=totalTime+toc;
+%     sum=sum+fit;
+%     fitM(end+1)=fit;
+% end
+% avg=sum/10;
+% fprintf("\nAverage Fitness: %f ",avg);
+% fprintf("+\nMax Fitness: %f ",max(fitM));
+% y=0;
+% for i=1:10
+%     x=(fitM(1,i)-avg)^2;
+%     y=y+x;
+% end
+% standardDeviation=(y/10)^0.5;
+% fprintf("\nStandard Deviation: %f ",standardDeviation);
+% fprintf("\nAverage Time: %f ",totalTime/10);
+% counters
+% 
+% sum=0;
+% fitM=[];
+% totalTime=0;
+% counters=zeros(1,3);
+% cumProbabilites=zeros(1,4);
+% instance_number=4;
+% for i=1:10
+%     tic;
+%     fit=PMCLAP_ABC(20,20,750,96,0.85,0,i,instance_number);
+%     totalTime=totalTime+toc;
+%     sum=sum+fit;
+%     fitM(end+1)=fit;
+% end
+% avg=sum/10;
+% fprintf("\nAverage Fitness: %f ",avg);
+% fprintf("+\nMax Fitness: %f ",max(fitM));
+% y=0;
+% for i=1:10
+%     x=(fitM(1,i)-avg)^2;
+%     y=y+x;
+% end
+% standardDeviation=(y/10)^0.5;
+% fprintf("\nStandard Deviation: %f ",standardDeviation);
+% fprintf("\nAverage Time: %f ",totalTime/10);
+% counters
+
+
 sum=0;
 fitM=[];
 totalTime=0;
@@ -8,7 +115,59 @@ cumProbabilites=zeros(1,4);
 instance_number=5;
 for i=1:10
     tic;
-    fit=PMCLAP_ABC(20,20,750,96,0.85,0,i,instance_number);
+    fit=PMCLAP_ABC(20,20,750,96,0.95,0,i,instance_number);
+    totalTime=totalTime+toc;
+    sum=sum+fit;
+    fitM(end+1)=fit;
+end
+avg=sum/10;
+fprintf("\nAverage Fitness: %f ",avg);
+fprintf("+\nMax Fitness: %f ",max(fitM));
+y=0;
+for i=1:10
+    x=(fitM(1,i)-avg)^2;
+    y=y+x;
+end
+standardDeviation=(y/10)^0.5;
+fprintf("\nStandard Deviation: %f ",standardDeviation);
+fprintf("\nAverage Time: %f ",totalTime/10);
+counters
+
+sum=0;
+fitM=[];
+totalTime=0;
+counters=zeros(1,3);
+cumProbabilites=zeros(1,4);
+instance_number=6;
+for i=1:10
+    tic;
+    fit=PMCLAP_ABC(20,20,750,96,0.85,1,i,instance_number);
+    totalTime=totalTime+toc;
+    sum=sum+fit;
+    fitM(end+1)=fit;
+end
+avg=sum/10;
+fprintf("\nAverage Fitness: %f ",avg);
+fprintf("+\nMax Fitness: %f ",max(fitM));
+y=0;
+for i=1:10
+    x=(fitM(1,i)-avg)^2;
+    y=y+x;
+end
+standardDeviation=(y/10)^0.5;
+fprintf("\nStandard Deviation: %f ",standardDeviation);
+fprintf("\nAverage Time: %f ",totalTime/10);
+counters
+
+sum=0;
+fitM=[];
+totalTime=0;
+counters=zeros(1,3);
+cumProbabilites=zeros(1,4);
+instance_number=7;
+for i=1:10
+    tic;
+    fit=PMCLAP_ABC(20,20,750,96,0.95,1,i,instance_number);
     totalTime=totalTime+toc;
     sum=sum+fit;
     fitM(end+1)=fit;
@@ -27,7 +186,136 @@ fprintf("\nAverage Time: %f ",totalTime/10);
 counters
 
 
+sum=0;
+fitM=[];
+totalTime=0;
+counters=zeros(1,3);
+cumProbabilites=zeros(1,4);
+instance_number=8;
+for i=1:10
+    tic;
+    fit=PMCLAP_ABC(20,20,750,96,0.85,2,i,instance_number);
+    totalTime=totalTime+toc;
+    sum=sum+fit;
+    fitM(end+1)=fit;
+end
+avg=sum/10;
+fprintf("\nAverage Fitness: %f ",avg);
+fprintf("+\nMax Fitness: %f ",max(fitM));
+y=0;
+for i=1:10
+    x=(fitM(1,i)-avg)^2;
+    y=y+x;
+end
+standardDeviation=(y/10)^0.5;
+fprintf("\nStandard Deviation: %f ",standardDeviation);
+fprintf("\nAverage Time: %f ",totalTime/10);
+counters
 
+
+sum=0;
+fitM=[];
+totalTime=0;
+counters=zeros(1,3);
+cumProbabilites=zeros(1,4);
+instance_number=9;
+for i=1:10
+    tic;
+    fit=PMCLAP_ABC(20,20,750,96,0.95,2,i,instance_number);
+    totalTime=totalTime+toc;
+    sum=sum+fit;
+    fitM(end+1)=fit;
+end
+avg=sum/10;
+fprintf("\nAverage Fitness: %f ",avg);
+fprintf("+\nMax Fitness: %f ",max(fitM));
+y=0;
+for i=1:10
+    x=(fitM(1,i)-avg)^2;
+    y=y+x;
+end
+standardDeviation=(y/10)^0.5;
+fprintf("\nStandard Deviation: %f ",standardDeviation);
+fprintf("\nAverage Time: %f ",totalTime/10);
+counters
+
+sum=0;
+fitM=[];
+totalTime=0;
+counters=zeros(1,3);
+cumProbabilites=zeros(1,4);
+instance_number=10;
+for i=1:10
+    tic;
+    fit=PMCLAP_ABC(20,50,750,96,0.85,0,i,instance_number);
+    totalTime=totalTime+toc;
+    sum=sum+fit;
+    fitM(end+1)=fit;
+end
+avg=sum/10;
+fprintf("\nAverage Fitness: %f ",avg);
+fprintf("+\nMax Fitness: %f ",max(fitM));
+y=0;
+for i=1:10
+    x=(fitM(1,i)-avg)^2;
+    y=y+x;
+end
+standardDeviation=(y/10)^0.5;
+fprintf("\nStandard Deviation: %f ",standardDeviation);
+fprintf("\nAverage Time: %f ",totalTime/10);
+counters
+
+sum=0;
+fitM=[];
+totalTime=0;
+counters=zeros(1,3);
+cumProbabilites=zeros(1,4);
+instance_number=11;
+for i=1:10
+    tic;
+    fit=PMCLAP_ABC(20,50,750,96,0.85,1,i,instance_number);
+    totalTime=totalTime+toc;
+    sum=sum+fit;
+    fitM(end+1)=fit;
+end
+avg=sum/10;
+fprintf("\nAverage Fitness: %f ",avg);
+fprintf("+\nMax Fitness: %f ",max(fitM));
+y=0;
+for i=1:10
+    x=(fitM(1,i)-avg)^2;
+    y=y+x;
+end
+standardDeviation=(y/10)^0.5;
+fprintf("\nStandard Deviation: %f ",standardDeviation);
+fprintf("\nAverage Time: %f ",totalTime/10);
+counters
+
+sum=0;
+fitM=[];
+totalTime=0;
+counters=zeros(1,3);
+cumProbabilites=zeros(1,4);
+instance_number=12;
+for i=1:10
+    tic;
+    fit=PMCLAP_ABC(20,50,750,96,0.85,2,i,instance_number);
+    totalTime=totalTime+toc;
+    sum=sum+fit;
+    fitM(end+1)=fit;
+end
+avg=sum/10;
+fprintf("\nAverage Fitness: %f ",avg);
+fprintf("+\nMax Fitness: %f ",max(fitM));
+y=0;
+for i=1:10
+    x=(fitM(1,i)-avg)^2;
+    y=y+x;
+end
+standardDeviation=(y/10)^0.5;
+fprintf("\nStandard Deviation: %f ",standardDeviation);
+fprintf("\nAverage Time: %f ",totalTime/10);
+counters
 
 function[fitmax]=PMCLAP_ABC(P,K,r,mu,alpha,b,increment,instance)
     x=mu*((1-alpha)^(1/(b+2)));
@@ -39,10 +327,12 @@ function[fitmax]=PMCLAP_ABC(P,K,r,mu,alpha,b,increment,instance)
     distance = pdist2(data(:, 1:2), data(:, 1:2));
     population=initialize(P,K,nrows);
     epochs=1;
-    fitness=computePopulationFitness(population(:,:,epochs),P,K,r,demand,distance,nrows,x,epochs);
+    allocationPopulation=zeros(1000,P,1,nrows);
+    [fitness,allocationPopulation(epochs,:,:,:)]=computePopulationFitness(population(:,:,epochs),P,K,r,demand,distance,nrows,x,epochs);
     fitM=zeros(1000,P,1);
     fitM(1,:,:)=fitness;
     counter=zeros(1,P);
+    
     while epochs<=1000 && notTerminated(fitM,epochs)                
         currentPop=population(:,:,epochs);
         epochs=epochs+1;
@@ -51,14 +341,22 @@ function[fitmax]=PMCLAP_ABC(P,K,r,mu,alpha,b,increment,instance)
         [SP,counter]=scoutBees(oB,P,K,distance,demand,r,nrows,x,epochs,counter);
         [modifiedPop,~]=createNextGenerationFrom(SP,currentPop,P,K,r,demand,distance,nrows,x,epochs);
         eN=enhanceSolutionVector(modifiedPop, P, K, distance, demand, r, nrows, x,epochs);
-        [ population(:,:,epochs),fitness,allocationPopulation]=createNextGenerationFrom(eN,modifiedPop,P,K,r,demand,distance,nrows,x,epochs);
-        fitM(epochs,:,:)=fitness;     
+        [ population(:,:,epochs),fitness,allocationPopulation(epochs,:,:,:)]=createNextGenerationFrom(eN,modifiedPop,P,K,r,demand,distance,nrows,x,epochs);
+        fitM(epochs,:,:)=fitness;  
+
     end
-    fitmax=max(fitM(:));
+    [fitmax,index]=max(fitM(:));
     fprintf("\nRadius: %d, Facilities opened: %d",r,K);
     fprintf("\nEpochs: %d",epochs);
     fprintf("\nFitness: %f ",fitmax);
-    
+            if epochs==150
+                fff=0;
+                for q=1:818
+                    if allocationPopulation(index+1,1,1,q) ~=0
+                        fff=fff+demand(q);
+                    end
+                end 
+            end
     baseDirectory = 'C:\MCLP_GA\818R\';
     instanceName = num2str(instance);
     indiceFileName = 'indice_data';
@@ -69,18 +367,17 @@ function[fitmax]=PMCLAP_ABC(P,K,r,mu,alpha,b,increment,instance)
     
     filename = sprintf('%s_%d.txt', indiceFileName, increment);
     fullFilePath = fullfile(subDirectory, filename);
-    indices=population(1,:,epochs);
+    indices=population(1,:,index+1);
     fileID = fopen(fullFilePath, 'w');
     % Write the matrix data to the file
-    fprintf(fileID, '%d\t', indices');
+    fprintf(fileID, '%d\t', indices);
     fprintf(fileID, '\n');
     % Close the file
     fclose(fileID);
     
     allocationFileName = 'allocation_data';
     % Extract the first page from the reshaped matrix
-    firstMatrix = reshape(allocationPopulation(1, :, :), 1, nrows);
-
+    firstMatrix = reshape(allocationPopulation(index+1,1, :, :), 1, nrows);
     filename = sprintf('%s_%d.txt',  allocationFileName, increment);
     fullFilePath = fullfile(subDirectory, filename);
     fileID = fopen(fullFilePath, 'w');
@@ -89,6 +386,8 @@ function[fitmax]=PMCLAP_ABC(P,K,r,mu,alpha,b,increment,instance)
     fprintf(fileID, '\n');
     % Close the file
     fclose(fileID);
+    
+
 end
 
 
@@ -204,6 +503,7 @@ function [pool,fitness,allocationPopulation] = createNextGenerationFrom(populati
     [fitness,allocationPopulation] = computePopulationFitness(mergedPop, 2 * P, K, r, demand, distance, nrows, x,epochs);
     [fitness, indices] = maxk(fitness, P);
     pool = mergedPop(indices,:);
+    allocationPopulation=allocationPopulation(1:20,:);
 end
 
 

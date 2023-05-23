@@ -12,4 +12,15 @@ for 818_10_0_0_95 instance:
 μ = 96
 b = 0
 α = 0.85
+r=750
 fi=0.01*demand(i)
+
+for 818_10_1_48_90 instance:		(constraint 6)
+
+constraint: summation fixij <= mu + ln(1-alpha)/tau
+μ = 96
+tau = 48
+α = 0.90
+r=750
+fi=0.01*demand(i)
+xij=1 if ith customer is allocated to jth facility

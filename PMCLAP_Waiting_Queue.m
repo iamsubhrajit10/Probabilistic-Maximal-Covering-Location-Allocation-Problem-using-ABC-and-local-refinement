@@ -6,16 +6,16 @@ global counters;
 global cumProbabilites;
 counters=zeros(1,3);
 cumProbabilites=zeros(1,4);
-instance='818_20_1_42_95';
+instance='818_20_0_0_95';
 bestFitness=0;
 achieveCount=0;
 bestTime=0;
-noOfExecution=2;
+noOfExecution=30;
 fitnessTrack=zeros(1,noOfExecution);
 timeTrack=zeros(1,noOfExecution);
 for i=1:noOfExecution
     tic;
-    [currentAllocation,currentFacilityIndices,fitness]=PMCLAP_ABC(filepath,20,42,0.85);
+    [currentAllocation,currentFacilityIndices,fitness]=PMCLAP_ABC(filepath,20,0,0.95);
     currentTime=toc;
     totalTime=totalTime+currentTime;
     if bestFitness<=fitness
@@ -43,7 +43,7 @@ standardDevFitness=(y/noOfExecution)^0.5;
 averageTime=totalTime/noOfExecution;
 y=0;
 for i=1:noOfExecution
-    x=(timeTrack(1,i)-averageTime)^2;
+    x=(timeTrack(1,i)--averageTime)^2;
     y=y+x;
 end
 standardDevTime=(y/noOfExecution)^0.5;
@@ -82,11 +82,11 @@ fprintf(fileID, 'Best Fitness Count: %d\n', achieveCount);
 fclose(fileID);
 fprintf('\nSuccessfully Executed %s',instance);
 
-function[bestAllocation,bestFacilityIndices,fitmax]=PMCLAP_ABC(filepath,K,tau,alpha)
+function[bestAllocation,bestFacilityIndices,fitmax]=PMCLAP_ABC(filepath,K,b,alpha)
     P=20;
     mu=96;
     r=750;
-    x=mu+((log(1-alpha))*(1440/tau));
+    x=mu*((1-alpha)^(1/(b+2)));
     x = round(x,2);
     data=readmatrix(filepath);         %Data Set Coordinate file path
     %file can be downloaded from: http://www.lac.inpe.br/~lorena/instances/mcover/Coord/coord818.txt

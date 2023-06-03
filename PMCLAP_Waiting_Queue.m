@@ -1,39 +1,52 @@
 filepath="C:\MCLP_GA\818.txt";
 
-sum=0;
-fitM=[];
+sumFitness=0;
 totalTime=0;
 global counters;
 global cumProbabilites;
 counters=zeros(1,3);
 cumProbabilites=zeros(1,4);
-instance='818_20_0_0_95';
+instance='818_20_1_42_95';
 bestFitness=0;
 achieveCount=0;
-noOfExecution=30;
+bestTime=0;
+noOfExecution=2;
+fitnessTrack=zeros(1,noOfExecution);
+timeTrack=zeros(1,noOfExecution);
 for i=1:noOfExecution
     tic;
-    [currentAllocation,currentFacilityIndices,fitness]=PMCLAP_ABC(filepath,20,0,0.95);
-    totalTime=totalTime+toc;
-    if bestFitness<fitness
+    [currentAllocation,currentFacilityIndices,fitness]=PMCLAP_ABC(filepath,20,42,0.85);
+    currentTime=toc;
+    totalTime=totalTime+currentTime;
+    if bestFitness<=fitness
         bestFitness=fitness;
         bestAllocation=currentAllocation;
         bestFacilityIndices=currentFacilityIndices;
+        if currentTime<bestTime
+           bestTime=currentTime;
+        end
     end
-    if fitness >=42920
+    if fitness >=61920
         achieveCount=achieveCount+1;
     end
-    sum=sum+fitness;
-    fitM(end+1)=fitness;
+    sumFitness=sumFitness+fitness;
+    fitnessTrack(1,i)=fitness;
+    timeTrack(1,i)=currentTime;
 end
-averageFitness=sum/noOfExecution;
+averageFitness=sumFitness/noOfExecution;
 y=0;
 for i=1:noOfExecution
-    x=(fitM(1,i)-averageFitness)^2;
+    x=(fitnessTrack(1,i)-averageFitness)^2;
     y=y+x;
 end
-standardDeviation=(y/noOfExecution)^0.5;
+standardDevFitness=(y/noOfExecution)^0.5;
 averageTime=totalTime/noOfExecution;
+y=0;
+for i=1:noOfExecution
+    x=(timeTrack(1,i)-averageTime)^2;
+    y=y+x;
+end
+standardDevTime=(y/noOfExecution)^0.5;
 baseDirectory = 'C:\MCLP_GA\818R\';
 indiceFileName = sprintf('%s_%s.txt',  'indice', instance);
 allocationFileName=sprintf('%s_%s.txt',  'allocation', instance);
@@ -58,20 +71,22 @@ fclose(fileID);
 fullFilePath = fullfile(baseDirectory, metadataFileName);
 fileID = fopen(fullFilePath, 'w');
 % Write the matrix data to the file
-fprintf(fileID, 'Best: %f\n', bestFitness);
-fprintf(fileID, 'Average: %f\n', averageFitness);
-fprintf(fileID, 'Time: %f\n', averageTime);
-fprintf(fileID, 'Std. Dev: %f\n', standardDeviation);
-fprintf(fileID, 'Best Count: %d\n', achieveCount);
+fprintf(fileID, 'Best Fitness: %f\n', bestFitness);
+fprintf(fileID, 'Average Fitness: %f\n', averageFitness);
+fprintf(fileID, 'Std. Dev Fitness: %f\n', standardDevFitness);
+fprintf(fileID, 'Best Instance Min Time: %f\n', bestTime);
+fprintf(fileID, 'Average Time: %f\n', averageTime);
+fprintf(fileID, 'Std. Dev Time: %f\n', standardDevTime);
+fprintf(fileID, 'Best Fitness Count: %d\n', achieveCount);
 % Close the file
 fclose(fileID);
 fprintf('\nSuccessfully Executed %s',instance);
 
-function[bestAllocation,bestFacilityIndices,fitmax]=PMCLAP_ABC(filepath,K,b,alpha)
+function[bestAllocation,bestFacilityIndices,fitmax]=PMCLAP_ABC(filepath,K,tau,alpha)
     P=20;
     mu=96;
     r=750;
-    x=mu*((1-alpha)^(1/(b+2)));
+    x=mu+((log(1-alpha))*(1440/tau));
     x = round(x,2);
     data=readmatrix(filepath);         %Data Set Coordinate file path
     %file can be downloaded from: http://www.lac.inpe.br/~lorena/instances/mcover/Coord/coord818.txt
@@ -108,11 +123,11 @@ end
 
 function[flag]=notTerminated(fitM,n)
     flag=true;
-    if n <50
+    if n <150
         return;
     end
     mx=max(fitM(n,:));
-    for i=n-1:-1:n-20
+    for i=n-1:-1:n-100
         temp=max(fitM(i,:));
         if temp<=mx
             flag=false;

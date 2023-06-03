@@ -20,7 +20,7 @@ for i=1:noOfExecution
         bestAllocation=currentAllocation;
         bestFacilityIndices=currentFacilityIndices;
     end
-    if fitness >=61900
+    if fitness >=61920
         achieveCount=achieveCount+1;
     end
     sum=sum+fitness;
@@ -108,11 +108,11 @@ end
 
 function[flag]=notTerminated(fitM,n)
     flag=true;
-    if n <50
+    if n <150
         return;
     end
     mx=max(fitM(n,:));
-    for i=n-1:-1:n-20
+    for i=n-1:-1:n-100
         temp=max(fitM(i,:));
         if temp<=mx
             flag=false;

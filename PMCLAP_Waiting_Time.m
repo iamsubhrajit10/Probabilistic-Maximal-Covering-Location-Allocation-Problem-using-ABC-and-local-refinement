@@ -1,7 +1,6 @@
 filepath="C:\MCLP_GA\818.txt";
 
-sum=0;
-fitM=[];
+sumFitness=0;
 totalTime=0;
 global counters;
 global cumProbabilites;
@@ -10,30 +9,44 @@ cumProbabilites=zeros(1,4);
 instance='818_20_1_42_95';
 bestFitness=0;
 achieveCount=0;
-noOfExecution=30;
+bestTime=0;
+noOfExecution=2;
+fitnessTrack=zeros(1,noOfExecution);
+timeTrack=zeros(1,noOfExecution);
 for i=1:noOfExecution
     tic;
     [currentAllocation,currentFacilityIndices,fitness]=PMCLAP_ABC(filepath,20,42,0.85);
-    totalTime=totalTime+toc;
-    if bestFitness<fitness
+    currentTime=toc;
+    totalTime=totalTime+currentTime;
+    if bestFitness<=fitness
         bestFitness=fitness;
         bestAllocation=currentAllocation;
         bestFacilityIndices=currentFacilityIndices;
+        if currentTime<bestTime
+           bestTime=currentTime;
+        end
     end
     if fitness >=61920
         achieveCount=achieveCount+1;
     end
-    sum=sum+fitness;
-    fitM(end+1)=fitness;
+    sumFitness=sumFitness+fitness;
+    fitnessTrack(1,i)=fitness;
+    timeTrack(1,i)=currentTime;
 end
-averageFitness=sum/noOfExecution;
+averageFitness=sumFitness/noOfExecution;
 y=0;
 for i=1:noOfExecution
-    x=(fitM(1,i)-averageFitness)^2;
+    x=(fitnessTrack(1,i)-averageFitness)^2;
     y=y+x;
 end
-standardDeviation=(y/noOfExecution)^0.5;
+standardDevFitness=(y/noOfExecution)^0.5;
 averageTime=totalTime/noOfExecution;
+y=0;
+for i=1:noOfExecution
+    x=(timeTrack(1,i)-averageTime)^2;
+    y=y+x;
+end
+standardDevTime=(y/noOfExecution)^0.5;
 baseDirectory = 'C:\MCLP_GA\818R\';
 indiceFileName = sprintf('%s_%s.txt',  'indice', instance);
 allocationFileName=sprintf('%s_%s.txt',  'allocation', instance);
@@ -58,11 +71,13 @@ fclose(fileID);
 fullFilePath = fullfile(baseDirectory, metadataFileName);
 fileID = fopen(fullFilePath, 'w');
 % Write the matrix data to the file
-fprintf(fileID, 'Best: %f\n', bestFitness);
-fprintf(fileID, 'Average: %f\n', averageFitness);
-fprintf(fileID, 'Time: %f\n', averageTime);
-fprintf(fileID, 'Std. Dev: %f\n', standardDeviation);
-fprintf(fileID, 'Best Count: %d\n', achieveCount);
+fprintf(fileID, 'Best Fitness: %f\n', bestFitness);
+fprintf(fileID, 'Average Fitness: %f\n', averageFitness);
+fprintf(fileID, 'Std. Dev Fitness: %f\n', standardDevFitness);
+fprintf(fileID, 'Best Instance Min Time: %f\n', bestTime);
+fprintf(fileID, 'Average Time: %f\n', averageTime);
+fprintf(fileID, 'Std. Dev Time: %f\n', standardDevTime);
+fprintf(fileID, 'Best Fitness Count: %d\n', achieveCount);
 % Close the file
 fclose(fileID);
 fprintf('\nSuccessfully Executed %s',instance);

@@ -6,7 +6,7 @@ global counters;
 global cumProbabilites;
 counters=zeros(1,3);
 cumProbabilites=zeros(1,4);
-instance='818_20_1_42_95';
+instance='818_20_1_42_85';
 bestFitness=0;
 achieveCount=0;
 bestTime=0;
@@ -26,7 +26,7 @@ for i=1:noOfExecution
            bestTime=currentTime;
         end
     end
-    if fitness >=61920
+    if fitness >=61900
         achieveCount=achieveCount+1;
     end
     sumFitness=sumFitness+fitness;

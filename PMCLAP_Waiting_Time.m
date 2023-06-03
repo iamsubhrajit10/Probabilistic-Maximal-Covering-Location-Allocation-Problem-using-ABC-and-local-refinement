@@ -22,7 +22,7 @@ for i=1:noOfExecution
         bestFitness=fitness;
         bestAllocation=currentAllocation;
         bestFacilityIndices=currentFacilityIndices;
-        if currentTime<bestTime
+        if i == 1 || currentTime<bestTime
            bestTime=currentTime;
         end
     end

@@ -1,5 +1,6 @@
 % provide the path of instance file e.g. 818 file
 %file can be downloaded from: http://www.lac.inpe.br/~lorena/instances/mcover/Coord/coord818.txt
+format long g;
 filepath="C:\MCLP_GA\818.txt";
 
 
@@ -11,20 +12,20 @@ counters=zeros(1,3);
 cumProbabilites=zeros(1,4);
 
 %provide the name of instance to be executed
-instance='818_50_1_49_90';
+instance='818_10_1_48_90';
 bestFitness=0;
 achieveCount=0;
 bestTime=0;
 
 %set number of times the instance should be executed
-noOfExecution=10;
+noOfExecution=2;
 fitnessTrack=zeros(1,noOfExecution);
 timeTrack=zeros(1,noOfExecution);
 bestEpochs=0;
 totalEpochs=0;
 for i=1:noOfExecution
     tic;
-    [currentAllocation,currentFacilityIndices,fitness,currentEpochs]=PMCLAP_ABC(filepath,50,48,0.90);
+    [currentAllocation,currentFacilityIndices,fitness,currentEpochs]=PMCLAP_ABC(filepath,10,48,0.90);
     currentTime=toc;
     sumFitness=sumFitness+fitness;
     totalTime=totalTime+currentTime;
@@ -33,14 +34,14 @@ for i=1:noOfExecution
         bestFitness=fitness;
         bestAllocation=currentAllocation;
         bestFacilityIndices=currentFacilityIndices;
-        if i == 1 || currentTime<bestTime
-           if i==1 || bestEpochs<currentEpochs
+        if i == 1 || currentTime>bestTime
+           if i==1 || bestEpochs>currentEpochs
                 bestEpcohs=currentEpochs;
            end
            bestTime=currentTime;
         end
     end
-    if fitness >=141650
+    if fitness >=26920
         achieveCount=achieveCount+1;
     end
     
@@ -556,6 +557,6 @@ function [neighbour] = getNeighbours(facility, N, distance, nrows)
     end
 end
 function result = formatToTwoDecimalPlaces(value)
-    result = floor(value * 100) / 100;
+    result = round(value,3);
 end
 

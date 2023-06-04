@@ -10,26 +10,33 @@ instance='818_20_1_42_85';
 bestFitness=0;
 achieveCount=0;
 bestTime=0;
-noOfExecution=2;
+noOfExecution=30;
 fitnessTrack=zeros(1,noOfExecution);
 timeTrack=zeros(1,noOfExecution);
+bestEpochs=0;
+totalEpochs=0;
 for i=1:noOfExecution
     tic;
-    [currentAllocation,currentFacilityIndices,fitness]=PMCLAP_ABC(filepath,20,42,0.85);
+    [currentAllocation,currentFacilityIndices,fitness,currentEpochs]=PMCLAP_ABC(filepath,20,42,0.85);
     currentTime=toc;
+    sumFitness=sumFitness+fitness;
     totalTime=totalTime+currentTime;
+    totalEpochs=totalEpochs+currentEpochs;
     if bestFitness<=fitness
         bestFitness=fitness;
         bestAllocation=currentAllocation;
         bestFacilityIndices=currentFacilityIndices;
         if i == 1 || currentTime<bestTime
+           if bestEpochs<currentEpochs
+                bestEpcohs=currentEpochs;
+           end
            bestTime=currentTime;
         end
     end
     if fitness >=61900
         achieveCount=achieveCount+1;
     end
-    sumFitness=sumFitness+fitness;
+    
     fitnessTrack(1,i)=fitness;
     timeTrack(1,i)=currentTime;
 end
@@ -47,6 +54,7 @@ for i=1:noOfExecution
     y=y+x;
 end
 standardDevTime=(y/noOfExecution)^0.5;
+averageEpochs=totalEpochs/noOfExecution;
 baseDirectory = 'C:\MCLP_GA\818R\';
 indiceFileName = sprintf('%s_%s.txt',  'indice', instance);
 allocationFileName=sprintf('%s_%s.txt',  'allocation', instance);
@@ -78,11 +86,13 @@ fprintf(fileID, 'Best Instance Min Time: %f\n', bestTime);
 fprintf(fileID, 'Average Time: %f\n', averageTime);
 fprintf(fileID, 'Std. Dev Time: %f\n', standardDevTime);
 fprintf(fileID, 'Best Fitness Count: %d\n', achieveCount);
+fprintf(fileID, 'Epoch of Best Sol: %d\n',bestEpochs);
+fprintf(fileID, 'Average Epochs: %f\n',averageEpochs);
 % Close the file
 fclose(fileID);
-fprintf('\nSuccessfully Executed %s',instance);
+fprintf('\nSuccessfully Executed %s\n',instance);
 
-function[bestAllocation,bestFacilityIndices,fitmax]=PMCLAP_ABC(filepath,K,tau,alpha)
+function[bestAllocation,bestFacilityIndices,fitmax,epochs]=PMCLAP_ABC(filepath,K,tau,alpha)
     P=20;
     mu=96;
     r=750;
@@ -93,7 +103,14 @@ function[bestAllocation,bestFacilityIndices,fitmax]=PMCLAP_ABC(filepath,K,tau,al
     len=size(data);                                 
     m=len(1);   % number of customers
     demand=data(:,3); %Data Set Demand file path
-    distance = pdist2(data(:, 1:2), data(:, 1:2));  %euclidian distance of nodes
+    distance=zeros(m,m);
+    for i=1:m
+        for j=1:m
+            if i~=j 
+                distance(i,j)=((formatToTwoDecimalPlaces(((data(i,1)-data(j,1)))^2)+formatToTwoDecimalPlaces(((data(i,2)-data(j,2)))^2))^0.5);
+            end
+        end
+    end
     distance = formatToTwoDecimalPlaces(distance);
     bestAllocation=zeros(1,m);
     bestFacilityIndices=zeros(1,K);
@@ -123,7 +140,7 @@ end
 
 function[flag]=notTerminated(fitM,n)
     flag=true;
-    if n <150
+    if n <100
         return;
     end
     mx=max(fitM(n,:));
@@ -443,9 +460,6 @@ function [neighbour] = getNeighbours(facility, N, distance, nrows)
     end
 end
 function result = formatToTwoDecimalPlaces(value)
-    if numel(value) == 1
-        result = fix(value * 100) / 100;
-    else
-        result = round(value * 100) / 100;
-    end
+    result = floor(value * 100) / 100;
 end
+

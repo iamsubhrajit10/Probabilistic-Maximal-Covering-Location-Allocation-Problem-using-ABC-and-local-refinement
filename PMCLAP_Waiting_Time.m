@@ -312,12 +312,12 @@ end
 % the paper
 % returns the updated colony and abaondoment counter after onlooker bees phase
 
-function [oBColony,counter] = onlookerBees(oBColony, P, K, distance, demand, r, nrows, x,epochs,counter)
+function [oBColony,abandonemntCounter] = onlookerBees(oBColony, P, K, distance, demand, r, m, x,epochs,abandonemntCounter)
     newColony = oBColony;
     probabilities = zeros(P, 1);
-    sumFitness = sum(computePopulationFitness(oBColony,P,K,r,demand,distance,nrows,x,epochs));
+    sumFitness = sum(computePopulationFitness(oBColony,P,K,r,demand,distance,m,x,epochs));
     for i = 1:P
-       probabilities(i) =getFitness(oBColony(i,:), K, r, demand, distance, nrows, x,epochs) / sumFitness;
+       probabilities(i) =getFitness(oBColony(i,:), K, r, demand, distance, m, x,epochs) / sumFitness;
     end
     probabilities=formatToTwoDecimalPlaces(probabilities);
     cumulativeProb=cumsum(probabilities);
@@ -332,14 +332,14 @@ function [oBColony,counter] = onlookerBees(oBColony, P, K, distance, demand, r, 
                 end
                 phi=randi([-1 1]);
                 v=round(oBColony(i,q)+phi*(oBColony(i,q)-oBColony(j,q)));
-                if v>0 && v<=nrows
+                if v>0 && v<=m
                     newColony(k, :) = v;
                 end
             end
-            if getFitness(newColony(k,:), K, r, demand, distance, nrows, x,epochs) >= getFitness(oBColony(k,:), K, r, demand, distance, nrows, x,epochs)
+            if getFitness(newColony(k,:), K, r, demand, distance, m, x,epochs) >= getFitness(oBColony(k,:), K, r, demand, distance, m, x,epochs)
               oBColony(i,:) = newColony(k,:);
             else
-              counter(1,i)=counter(1,i)+1;
+              abandonemntCounter(1,i)=abandonemntCounter(1,i)+1;
             end
         end
     end

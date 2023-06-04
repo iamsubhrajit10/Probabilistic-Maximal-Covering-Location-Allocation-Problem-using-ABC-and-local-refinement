@@ -11,20 +11,20 @@ counters=zeros(1,3);
 cumProbabilites=zeros(1,4);
 
 %provide the name of instance to be executed
-instance='818_20_1_42_85';
+instance='818_10_1_48_90';
 bestFitness=0;
 achieveCount=0;
 bestTime=0;
 
 %set number of times the instance should be executed
-noOfExecution=2;
+noOfExecution=10;
 fitnessTrack=zeros(1,noOfExecution);
 timeTrack=zeros(1,noOfExecution);
 bestEpochs=0;
 totalEpochs=0;
 for i=1:noOfExecution
     tic;
-    [currentAllocation,currentFacilityIndices,fitness,currentEpochs]=PMCLAP_ABC(filepath,20,42,0.85);
+    [currentAllocation,currentFacilityIndices,fitness,currentEpochs]=PMCLAP_ABC(filepath,10,48,0.90);
     currentTime=toc;
     sumFitness=sumFitness+fitness;
     totalTime=totalTime+currentTime;
@@ -34,13 +34,13 @@ for i=1:noOfExecution
         bestAllocation=currentAllocation;
         bestFacilityIndices=currentFacilityIndices;
         if i == 1 || currentTime<bestTime
-           if bestEpochs<currentEpochs
+           if i==1 || bestEpochs<currentEpochs
                 bestEpcohs=currentEpochs;
            end
            bestTime=currentTime;
         end
     end
-    if fitness >=61900
+    if fitness >=26920
         achieveCount=achieveCount+1;
     end
     
@@ -120,17 +120,21 @@ fprintf('\nSuccessfully Executed %s\n',instance);
 %Outputs:- fitmax: contains the fitness of best soultion achieved
 %Outputs:- epochs: contains the number of iterations executed till convergence
 function[bestAllocation,bestFacilityIndices,fitmax,epochs]=PMCLAP_ABC(filepath,K,tau,alpha)
-    P=20;
-    mu=96;
-    r=750;
-    x=mu+((log(1-alpha))*(1440/tau));
-    x = formatToTwoDecimalPlaces(x);
-    data=readmatrix(filepath);         %Data Set Coordinate file path
+    P=20;   %Colony size
+    mu=96;  %mu that appears in the formulation
+    r=750;  %r radius in m
+    x=mu+((log(1-alpha))*(1440/tau));   %RHS constraint calculation of constraint of waiting time
+    x = formatToTwoDecimalPlaces(x);    %Precision to two decimal places
+    data=readmatrix(filepath);          %Reading the data matrix of customers; 
+                                        %It contains m rows of <x y demand> where x,y are the coordinates  
 
     len=size(data);                                 
     m=len(1);   % number of customers
-    demand=data(:,3); %Data Set Demand file path
+    demand=data(:,3); % Demands of customers
     distance=zeros(m,m);
+    
+    % Calculation of distance matrix using euclidian distance and precision
+    % is set to upto two decimal places
     for i=1:m
         for j=1:m
             if i~=j 
@@ -139,11 +143,16 @@ function[bestAllocation,bestFacilityIndices,fitmax,epochs]=PMCLAP_ABC(filepath,K
         end
     end
     distance=formatToTwoDecimalPlaces(distance);
-    bestAllocation=zeros(1,m);
-    bestFacilityIndices=zeros(1,K);
-    fitmax=0;
-    population=initialize(P,K,m); 
-    epochs=1;
+   
+    bestAllocation=zeros(1,m);      %to hold allocation of customers to facilities of best solution
+    bestFacilityIndices=zeros(1,K); %to hold facility indices of best solution
+    fitmax=0;                       %to hold best fitness achieved so far
+    
+    %initialization of population
+    population=initialize(P,K,m);   %PxK matrix each row holding a possible candidate solution of K facilities
+    epochs=1;                       %counts the number of epochs executed
+    
+    %computes the fit
     [fitness,currentAllocation,currentFacilityIndices]=computePopulationFitness(population(:,:,epochs),P,K,r,demand,distance,m,x,epochs);
     [bestAllocation,bestFacilityIndices,fitmax]=updateBestSolution(currentAllocation,currentFacilityIndices,bestAllocation,bestFacilityIndices,m,demand,fitmax);
     fitM=zeros(1000,P,1);

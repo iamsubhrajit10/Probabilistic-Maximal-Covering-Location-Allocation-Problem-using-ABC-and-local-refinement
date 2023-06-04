@@ -140,7 +140,7 @@ end
 
 function[flag]=notTerminated(fitM,n)
     flag=true;
-    if n <100
+    if n <=100
         return;
     end
     mx=max(fitM(n,:));

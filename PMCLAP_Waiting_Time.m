@@ -1,4 +1,7 @@
+% provide the path of instance file e.g. 818 file
+%file can be downloaded from: http://www.lac.inpe.br/~lorena/instances/mcover/Coord/coord818.txt
 filepath="C:\MCLP_GA\818.txt";
+
 
 sumFitness=0;
 totalTime=0;
@@ -6,11 +9,15 @@ global counters;
 global cumProbabilites;
 counters=zeros(1,3);
 cumProbabilites=zeros(1,4);
+
+%provide the name of instance to be executed
 instance='818_20_1_42_85';
 bestFitness=0;
 achieveCount=0;
 bestTime=0;
-noOfExecution=30;
+
+%set number of times the instance should be executed
+noOfExecution=2;
 fitnessTrack=zeros(1,noOfExecution);
 timeTrack=zeros(1,noOfExecution);
 bestEpochs=0;
@@ -41,6 +48,8 @@ for i=1:noOfExecution
     timeTrack(1,i)=currentTime;
 end
 averageFitness=sumFitness/noOfExecution;
+
+% computation of std. dev. of fitness
 y=0;
 for i=1:noOfExecution
     x=(fitnessTrack(1,i)-averageFitness)^2;
@@ -48,6 +57,8 @@ for i=1:noOfExecution
 end
 standardDevFitness=(y/noOfExecution)^0.5;
 averageTime=totalTime/noOfExecution;
+
+% computation of std. dev. of time
 y=0;
 for i=1:noOfExecution
     x=(timeTrack(1,i)-averageTime)^2;
@@ -55,6 +66,8 @@ for i=1:noOfExecution
 end
 standardDevTime=(y/noOfExecution)^0.5;
 averageEpochs=totalEpochs/noOfExecution;
+
+% set the path where output results to be written
 baseDirectory = 'C:\MCLP_GA\818R\';
 indiceFileName = sprintf('%s_%s.txt',  'indice', instance);
 allocationFileName=sprintf('%s_%s.txt',  'allocation', instance);
@@ -64,21 +77,21 @@ if ~isfolder(baseDirectory)
 end
 fullFilePath = fullfile(baseDirectory, indiceFileName);
 fileID = fopen(fullFilePath, 'w');
-% Write the matrix data to the file
+% Write the facilities opened to the file
 fprintf(fileID, '%d\t', bestFacilityIndices);
 % Close the file
 fclose(fileID);
 
 fullFilePath = fullfile(baseDirectory, allocationFileName);
 fileID = fopen(fullFilePath, 'w');
-% Write the matrix data to the file
+% Write the allocation matrix data to the file
 fprintf(fileID, '%d\t', bestAllocation);
 % Close the file
 fclose(fileID);
 
 fullFilePath = fullfile(baseDirectory, metadataFileName);
 fileID = fopen(fullFilePath, 'w');
-% Write the matrix data to the file
+% Write the metadata to the file
 fprintf(fileID, 'Best Fitness: %f\n', bestFitness);
 fprintf(fileID, 'Average Fitness: %f\n', averageFitness);
 fprintf(fileID, 'Std. Dev Fitness: %f\n', standardDevFitness);
@@ -92,6 +105,20 @@ fprintf(fileID, 'Average Epochs: %f\n',averageEpochs);
 fclose(fileID);
 fprintf('\nSuccessfully Executed %s\n',instance);
 
+%PMCLAP_ABC funtion implements the proposed strategy for solving PMCLAP
+%Inputs:- filepath: path to the dataset of instance e.g. 818.txt and data is of size mx1
+%Inputs:- K: number of facilities to be opened
+%Inputs:- tau: queue waiting time in terms of minutes, a conversion 
+           %is done to express it according to poisson distribution 
+           %i.e. (24*60)/tau is used in the formulation 
+%Inputs:- alpha: probability in terms of percentage e.g. 0.85
+%Outputs:- bestAllocation: allocation matrix of 1xm size correspomding to
+           %allocation of best solution achieved so far. Each coloumn
+           %corresponds to a customer, and if the customer is allocated to
+           %a facility then it contains the facility indice otherwise 0
+%Outputs:- bestFacilityIndices: 1xK matrix, contains facility indices opened for best solution
+%Outputs:- fitmax: contains the fitness of best soultion achieved
+%Outputs:- epochs: contains the number of iterations executed till convergence
 function[bestAllocation,bestFacilityIndices,fitmax,epochs]=PMCLAP_ABC(filepath,K,tau,alpha)
     P=20;
     mu=96;
@@ -99,7 +126,7 @@ function[bestAllocation,bestFacilityIndices,fitmax,epochs]=PMCLAP_ABC(filepath,K
     x=mu+((log(1-alpha))*(1440/tau));
     x = formatToTwoDecimalPlaces(x);
     data=readmatrix(filepath);         %Data Set Coordinate file path
-    %file can be downloaded from: http://www.lac.inpe.br/~lorena/instances/mcover/Coord/coord818.txt
+
     len=size(data);                                 
     m=len(1);   % number of customers
     demand=data(:,3); %Data Set Demand file path
@@ -107,11 +134,11 @@ function[bestAllocation,bestFacilityIndices,fitmax,epochs]=PMCLAP_ABC(filepath,K
     for i=1:m
         for j=1:m
             if i~=j 
-                distance(i,j)=((formatToTwoDecimalPlaces(((data(i,1)-data(j,1)))^2)+formatToTwoDecimalPlaces(((data(i,2)-data(j,2)))^2))^0.5);
+                distance(i,j)=formatToTwoDecimalPlaces((formatToTwoDecimalPlaces((data(i,1)-data(j,1))^2)+formatToTwoDecimalPlaces((data(i,2)-data(j,2))^2))^0.5);
             end
         end
     end
-    distance = formatToTwoDecimalPlaces(distance);
+    distance=formatToTwoDecimalPlaces(distance);
     bestAllocation=zeros(1,m);
     bestFacilityIndices=zeros(1,K);
     fitmax=0;
@@ -375,19 +402,18 @@ function[fitness,allocation]=getFitness3(solution,K,r,demand,distance,nrows,x)
         f=0.01*demand(j);
         f=formatToTwoDecimalPlaces(f);
         for i=1:K
-            if ~allocation(1,j) && (yM(i,1)+f)<=x && distance(solution(i),j)<=r
+            if ~allocation(1,j) && formatToTwoDecimalPlaces(yM(i,1)+f)<=x && distance(solution(i),j)<=r
                 weightedMatrix(1,i)=demand(j)/distance(solution(i),j);
             end
         end
-            weightedMatrix=round(weightedMatrix,2);
+            weightedMatrix=formatToTwoDecimalPlaces(weightedMatrix);
             [maxW,index]=max(weightedMatrix(1,:));
             if maxW ~=0
                 allocation(1,j)=solution(index);
                 val=val+demand(j);
-                yM(index,1)=yM(index,1)+f;
+                yM(index,1)=formatToTwoDecimalPlaces(yM(index,1)+f);
             end
     end
-    yM=formatToTwoDecimalPlaces(yM);
     fitness=val;
 end
 
@@ -399,7 +425,7 @@ function[yM,facilityNo,flag]=getRandomFacility(solution,customer,distance,r,yM,x
   f=formatToTwoDecimalPlaces(f);
   j=1;
   for i=1:K
-      if distance(solution(i),customer)<=r && (yM(i,1)+f)<=x
+      if distance(solution(i),customer)<=r && formatToTwoDecimalPlaces(yM(i,1)+f)<=x
           availableFacility(end+1)=i;
           j=j+1;
           flag=true;
@@ -409,9 +435,8 @@ function[yM,facilityNo,flag]=getRandomFacility(solution,customer,distance,r,yM,x
   if flag
     randomIndex = randi(numel(availableFacility));
     facilityNo=availableFacility(randomIndex);
-    yM(facilityNo,1)=yM(facilityNo,1)+f;
+    yM(facilityNo,1)=formatToTwoDecimalPlaces(yM(facilityNo,1)+f);
   end
-  yM=formatToTwoDecimalPlaces(yM);
 end
 function[yM,facilityNo,flag]=getLessCongestedFacility(solution,customer,distance,r,yM,x,demand,K)
   availableFacility=zeros(1,K);
@@ -421,7 +446,7 @@ function[yM,facilityNo,flag]=getLessCongestedFacility(solution,customer,distance
   f=formatToTwoDecimalPlaces(f);
   min=-1;
   for i=1:K
-      if distance(solution(i),customer)<=r && (yM(i,1)+f)<=x
+      if distance(solution(i),customer)<=r && formatToTwoDecimalPlaces(yM(i,1)+f)<=x
           min=yM(i,1);
           facilityNo=i;
           availableFacility(1,i)=1;
@@ -436,10 +461,9 @@ function[yM,facilityNo,flag]=getLessCongestedFacility(solution,customer,distance
       end
   end
   if facilityNo ~=-1
-      yM(facilityNo,1)=yM(facilityNo,1)+f;
+      yM(facilityNo,1)=formatToTwoDecimalPlaces(yM(facilityNo,1)+f);
       flag=true;
   end
-  yM=formatToTwoDecimalPlaces(yM);
 end
 
 

@@ -13,23 +13,30 @@ bestTime=0;
 noOfExecution=30;
 fitnessTrack=zeros(1,noOfExecution);
 timeTrack=zeros(1,noOfExecution);
+bestEpochs=0;
+totalEpochs=0;
 for i=1:noOfExecution
     tic;
-    [currentAllocation,currentFacilityIndices,fitness]=PMCLAP_ABC(filepath,20,0,0.95);
+    [currentAllocation,currentFacilityIndices,fitness,currentEpochs]=PMCLAP_ABC(filepath,20,0,0.95);
     currentTime=toc;
+    sumFitness=sumFitness+fitness;
     totalTime=totalTime+currentTime;
+    totalEpochs=totalEpochs+currentEpochs;
     if bestFitness<=fitness
         bestFitness=fitness;
         bestAllocation=currentAllocation;
         bestFacilityIndices=currentFacilityIndices;
-        if currentTime<bestTime
+        if i == 1 || currentTime<bestTime
+           if bestEpochs<currentEpochs
+                bestEpcohs=currentEpochs;
+           end
            bestTime=currentTime;
         end
     end
-    if fitness >=61920
+    if fitness >=42920
         achieveCount=achieveCount+1;
     end
-    sumFitness=sumFitness+fitness;
+    
     fitnessTrack(1,i)=fitness;
     timeTrack(1,i)=currentTime;
 end
@@ -43,10 +50,11 @@ standardDevFitness=(y/noOfExecution)^0.5;
 averageTime=totalTime/noOfExecution;
 y=0;
 for i=1:noOfExecution
-    x=(timeTrack(1,i)--averageTime)^2;
+    x=(timeTrack(1,i)-averageTime)^2;
     y=y+x;
 end
 standardDevTime=(y/noOfExecution)^0.5;
+averageEpochs=totalEpochs/noOfExecution;
 baseDirectory = 'C:\MCLP_GA\818R\';
 indiceFileName = sprintf('%s_%s.txt',  'indice', instance);
 allocationFileName=sprintf('%s_%s.txt',  'allocation', instance);
@@ -78,23 +86,32 @@ fprintf(fileID, 'Best Instance Min Time: %f\n', bestTime);
 fprintf(fileID, 'Average Time: %f\n', averageTime);
 fprintf(fileID, 'Std. Dev Time: %f\n', standardDevTime);
 fprintf(fileID, 'Best Fitness Count: %d\n', achieveCount);
+fprintf(fileID, 'Epoch of Best Sol: %d\n',bestEpochs);
+fprintf(fileID, 'Average Epochs: %f\n',averageEpochs);
 % Close the file
 fclose(fileID);
-fprintf('\nSuccessfully Executed %s',instance);
+fprintf('\nSuccessfully Executed %s\n',instance);
 
-function[bestAllocation,bestFacilityIndices,fitmax]=PMCLAP_ABC(filepath,K,b,alpha)
+function[bestAllocation,bestFacilityIndices,fitmax,epochs]=PMCLAP_ABC(filepath,K,b,alpha)
     P=20;
     mu=96;
     r=750;
     x=mu*((1-alpha)^(1/(b+2)));
-    x = round(x,2);
+    x = formatToTwoDecimalPlaces(x);
     data=readmatrix(filepath);         %Data Set Coordinate file path
     %file can be downloaded from: http://www.lac.inpe.br/~lorena/instances/mcover/Coord/coord818.txt
     len=size(data);                                 
     m=len(1);   % number of customers
     demand=data(:,3); %Data Set Demand file path
-    distance = pdist2(data(:, 1:2), data(:, 1:2));  %euclidian distance of nodes
-    distance = round(distance, 2);
+    distance=zeros(m,m);
+    for i=1:m
+        for j=1:m
+            if i~=j 
+                distance(i,j)=((formatToTwoDecimalPlaces(((data(i,1)-data(j,1)))^2)+formatToTwoDecimalPlaces(((data(i,2)-data(j,2)))^2))^0.5);
+            end
+        end
+    end
+    distance = formatToTwoDecimalPlaces(distance);
     bestAllocation=zeros(1,m);
     bestFacilityIndices=zeros(1,K);
     fitmax=0;
@@ -123,7 +140,7 @@ end
 
 function[flag]=notTerminated(fitM,n)
     flag=true;
-    if n <150
+    if n <100
         return;
     end
     mx=max(fitM(n,:));
@@ -209,7 +226,9 @@ function [newPopulation,counter] = onlookerBees(population, P, K, distance, dema
     for i = 1:P
        probabilities(i) =getFitness(population(i,:), K, r, demand, distance, nrows, x,epochs) / sumFitness;
     end
+    probabilities=formatToTwoDecimalPlaces(probabilities);
     cumulativeProb=cumsum(probabilities);
+    cumulativeProb=formatToTwoDecimalPlaces(cumulativeProb);
     for k = 1:P
         i = find(cumulativeProb >= rand(), 1);
         if ~(i==0)
@@ -290,14 +309,14 @@ function[fitness,allocationMatrix]=getFitness(solution,K,r,demand,distance,nrows
             probabilites(3) = (counters(1,3) + eps) / (total + 4*eps); 
 
             % compute cumulative probabilities
-            probabilites=round(probabilites,2);
+            probabilites=formatToTwoDecimalPlaces(probabilites);
             cumProbabilites = cumsum(probabilites);
-            cumProbabilites=round(cumProbabilites,2);
+            cumProbabilites=formatToTwoDecimalPlaces(cumProbabilites);
         end
         
         % select a solution based on the computed probabilities
         randProb = rand();
-        randProb = round(randProb,2);
+        randProb = formatToTwoDecimalPlaces(randProb);
         if randProb < cumProbabilites(1)
             index=1;
             [fitness,allocationMatrix] = getFitness1(solution, K, r, demand, distance, nrows, x,epochs);
@@ -354,7 +373,7 @@ function[fitness,allocation]=getFitness3(solution,K,r,demand,distance,nrows,x)
     for j=1:nrows
         weightedMatrix=zeros(1,K);
         f=0.01*demand(j);
-        f=round(f,2);
+        f=formatToTwoDecimalPlaces(f);
         for i=1:K
             if ~allocation(1,j) && (yM(i,1)+f)<=x && distance(solution(i),j)<=r
                 weightedMatrix(1,i)=demand(j)/distance(solution(i),j);
@@ -368,7 +387,7 @@ function[fitness,allocation]=getFitness3(solution,K,r,demand,distance,nrows,x)
                 yM(index,1)=yM(index,1)+f;
             end
     end
-    yM=round(yM,2);
+    yM=formatToTwoDecimalPlaces(yM);
     fitness=val;
 end
 
@@ -377,7 +396,7 @@ function[yM,facilityNo,flag]=getRandomFacility(solution,customer,distance,r,yM,x
   flag=false;
   facilityNo=-1;
   f=0.01*demand(customer);
-  f=round(f,2);
+  f=formatToTwoDecimalPlaces(f);
   j=1;
   for i=1:K
       if distance(solution(i),customer)<=r && (yM(i,1)+f)<=x
@@ -392,14 +411,14 @@ function[yM,facilityNo,flag]=getRandomFacility(solution,customer,distance,r,yM,x
     facilityNo=availableFacility(randomIndex);
     yM(facilityNo,1)=yM(facilityNo,1)+f;
   end
-  yM=round(yM,2);
+  yM=formatToTwoDecimalPlaces(yM);
 end
 function[yM,facilityNo,flag]=getLessCongestedFacility(solution,customer,distance,r,yM,x,demand,K)
   availableFacility=zeros(1,K);
   flag=false;
   facilityNo=-1;
   f=0.01*demand(customer);
-  f=round(f,2);
+  f=formatToTwoDecimalPlaces(f);
   min=-1;
   for i=1:K
       if distance(solution(i),customer)<=r && (yM(i,1)+f)<=x
@@ -420,7 +439,7 @@ function[yM,facilityNo,flag]=getLessCongestedFacility(solution,customer,distance
       yM(facilityNo,1)=yM(facilityNo,1)+f;
       flag=true;
   end
-  yM=round(yM, 2);
+  yM=formatToTwoDecimalPlaces(yM);
 end
 
 
@@ -439,5 +458,8 @@ function [neighbour] = getNeighbours(facility, N, distance, nrows)
         [~, indices] = mink(d, k);
         neighbour = indices;
     end
+end
+function result = formatToTwoDecimalPlaces(value)
+    result = floor(value * 100) / 100;
 end
 

@@ -319,7 +319,11 @@ function [oBColony,abandonemntCounter] = onlookerBees(oBColony, P, K, distance, 
     for i = 1:P
        probabilities(i) =getFitness(oBColony(i,:), K, r, demand, distance, m, x,epochs) / sumFitness;
     end
+    %computes the probability of each solution in the colony with upto 2
+    %decimal precision
     probabilities=formatToTwoDecimalPlaces(probabilities);
+    %calculates cumulative probabilities and applies roulette wheel
+    %selection
     cumulativeProb=cumsum(probabilities);
     cumulativeProb=formatToTwoDecimalPlaces(cumulativeProb);
     for k = 1:P
@@ -345,23 +349,27 @@ function [oBColony,abandonemntCounter] = onlookerBees(oBColony, P, K, distance, 
     end
 end
 
-function [population,counter] = scoutBees(population,P, K, distance, demand, r, nrows, x,epochs,counter)
-    L = floor(0.1*K*P);
+% Scout Bees Phase as per the standard procedure explained in the paper
+% Returns the updated colony and abandonement counter
+function [sBColony,abandonmentCounter] = scoutBees(sBColony,P, K, distance, demand, r, m, x,epochs,abandonmentCounter)
+    L = floor(0.1*K*P); % Abandonment limit
     for i=1:P
-        if counter(1,i)> L
-            population(i, :) = randperm(nrows,K);
-            counter(1,i)=0;
+        if abandonmentCounter(1,i)> L
+            sBColony(i, :) = randperm(m,K);
+            abandonmentCounter(1,i)=0;
         end
     end
 
 end
 
-
-function [pool,fitnessBestPop,allocation,facilityIndice] = createNextGenerationFrom(population, T, P, K, r, demand, distance, nrows, x,epochs)
-    mergedPop = cat(1, population, T);
-    [fitnessMergedPop,allocation,facilityIndice] = computePopulationFitness(mergedPop, 2 * P, K, r, demand, distance, nrows, x,epochs);
+% function to keep intanct the best solutions achieved so far
+% it merges the two colonies provided as argument and returns the top P solutions
+% from the merged colony of the both
+function [bestColony,fitnessBestPop,allocation,facilityIndice] = createNextGenerationFrom(colony1, colony2, P, K, r, demand, distance, m, x,epochs)
+    mergedColony = cat(1, colony1, colony2);
+    [fitnessMergedPop,allocation,facilityIndice] = computePopulationFitness(mergedColony, 2 * P, K, r, demand, distance, m, x,epochs);
     [fitnessBestPop, indices] = maxk(fitnessMergedPop, P);
-    pool = mergedPop(indices,:);
+    bestColony = mergedColony(indices,:);
 end
 
 

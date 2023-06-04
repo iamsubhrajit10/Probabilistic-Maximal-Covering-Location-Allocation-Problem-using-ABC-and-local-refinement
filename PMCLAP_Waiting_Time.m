@@ -11,20 +11,20 @@ counters=zeros(1,3);
 cumProbabilites=zeros(1,4);
 
 %provide the name of instance to be executed
-instance='818_10_1_48_90';
+instance='818_50_1_48_90';
 bestFitness=0;
 achieveCount=0;
 bestTime=0;
 
 %set number of times the instance should be executed
-noOfExecution=10;
+noOfExecution=2;
 fitnessTrack=zeros(1,noOfExecution);
 timeTrack=zeros(1,noOfExecution);
 bestEpochs=0;
 totalEpochs=0;
 for i=1:noOfExecution
     tic;
-    [currentAllocation,currentFacilityIndices,fitness,currentEpochs]=PMCLAP_ABC(filepath,10,48,0.90);
+    [currentAllocation,currentFacilityIndices,fitness,currentEpochs]=PMCLAP_ABC(filepath,50,48,0.90);
     currentTime=toc;
     sumFitness=sumFitness+fitness;
     totalTime=totalTime+currentTime;
@@ -40,7 +40,7 @@ for i=1:noOfExecution
            bestTime=currentTime;
         end
     end
-    if fitness >=26920
+    if fitness >=134600
         achieveCount=achieveCount+1;
     end
     
@@ -117,9 +117,9 @@ fprintf('\nSuccessfully Executed %s\n',instance);
            %corresponds to a customer, and if the customer is allocated to
            %a facility then it contains the facility indice otherwise 0
 %Outputs:- bestFacilityIndices: 1xK matrix, contains facility indices opened for best solution
-%Outputs:- fitmax: contains the fitness of best soultion achieved
+%Outputs:- maxNectar: contains the nectar of best soultion achieved
 %Outputs:- epochs: contains the number of iterations executed till convergence
-function[bestAllocation,bestFacilityIndices,fitmax,epochs]=PMCLAP_ABC(filepath,K,tau,alpha)
+function[bestAllocation,bestFacilityIndices,maxNectar,epochs]=PMCLAP_ABC(filepath,K,tau,alpha)
     P=20;   %Colony size
     mu=96;  %mu that appears in the formulation
     r=750;  %r radius in m
@@ -146,43 +146,77 @@ function[bestAllocation,bestFacilityIndices,fitmax,epochs]=PMCLAP_ABC(filepath,K
    
     bestAllocation=zeros(1,m);      %to hold allocation of customers to facilities of best solution
     bestFacilityIndices=zeros(1,K); %to hold facility indices of best solution
-    fitmax=0;                       %to hold best fitness achieved so far
+    maxNectar=0;                       %to hold best fitness achieved so far
     
-    %initialization of population
-    population=initialize(P,K,m);   %PxK matrix each row holding a possible candidate solution of K facilities
+    %initialization of initial colony
+    colony=initialize(P,K,m);   %PxK matrix each row holding a possible candidate solution of K facilities
     epochs=1;                       %counts the number of epochs executed
     
-    %computes the fit
-    [fitness,currentAllocation,currentFacilityIndices]=computePopulationFitness(population(:,:,epochs),P,K,r,demand,distance,m,x,epochs);
-    [bestAllocation,bestFacilityIndices,fitmax]=updateBestSolution(currentAllocation,currentFacilityIndices,bestAllocation,bestFacilityIndices,m,demand,fitmax);
-    fitM=zeros(1000,P,1);
-    fitM(1,:,:)=fitness;
-    counter=zeros(1,P);
+    %computes the fitness for each of the solutions in the colony, and also
+    %returns the allocation and facilities opened of best solution in the
+    %colony
+    [nectar,currentAllocation,currentFacilityIndices]=computePopulationFitness(colony(:,:,epochs),P,K,r,demand,distance,m,x,epochs);
     
-    while epochs<=1000 && notTerminated(fitM,epochs)                
-        currentPop=population(:,:,epochs);
-        epochs=epochs+1;
-        [eB,counter]=employeedBees(currentPop,P,K,distance,demand,r,m,x,epochs,counter);
-        [oB,counter]=onlookerBees(eB,P,K,distance,demand,r,m,x,epochs,counter);
-        [SP,counter]=scoutBees(oB,P,K,distance,demand,r,m,x,epochs,counter);
-        [modifiedPop,~]=createNextGenerationFrom(SP,currentPop,P,K,r,demand,distance,m,x,epochs);
-        eN=enhanceSolutionVector(modifiedPop, P, K, distance, demand, r, m, x,epochs);
-        [population(:,:,epochs),fitness,currentAllocation,currentFacilityIndices]=createNextGenerationFrom(eN,modifiedPop,P,K,r,demand,distance,m,x,epochs);
-        [bestAllocation,bestFacilityIndices,fitmax]=updateBestSolution(currentAllocation,currentFacilityIndices,bestAllocation,bestFacilityIndices,m,demand,fitmax);
-        fitM(epochs,:,:)=fitness;  
+    %updates the best allocation, facility indices and max fitness achieved
+    %with the best soultion achieved so far
+    [bestAllocation,bestFacilityIndices,maxNectar]=updateBestSolution(currentAllocation,currentFacilityIndices,bestAllocation,bestFacilityIndices,m,demand,maxNectar);
+    
+    % fitness matrix to hold the fitness of all the solutions so far
+    % generated of the populations across generations, as program is
+    % limtied to max 1000 epochs, it's a 1000xPx1 matrix
+    nectarMatrix=zeros(1000,P,1);
+    nectarMatrix(1,:,:)=nectar;
+    
+    %to hold the abondant counter values of the P solutions of the colony
+    abandonmentCounter=zeros(1,P);
+    
+    %execute till stopping criterion is met
+    %limited to 1000 epochs max
+    %notTerminated func. checks the stopping criterion is met or not
+    while epochs<=1000 && notTerminated(nectarMatrix,epochs)
+        currentColony=colony(:,:,epochs);  % holds the current colony of the current generation/iteration
+        epochs=epochs+1;                    % as new colony to be generated, epochs is increased by 1
+        
+        %Employed Bees Phase
+        [eBColony,abandonmentCounter]=employeedBees(currentColony,P,K,distance,demand,r,m,x,epochs,abandonmentCounter);
+        
+        %Onlooker Bees Phase
+        [oBColony,abandonmentCounter]=onlookerBees(eBColony,P,K,distance,demand,r,m,x,epochs,abandonmentCounter);
+        
+        %Scout Bees Phase
+        [sBColony,abandonmentCounter]=scoutBees(oBColony,P,K,distance,demand,r,m,x,epochs,abandonmentCounter);
+        
+        %Best solutions achieved so far are kept intact
+        [updatedColony,~]=createNextGenerationFrom(sBColony,currentColony,P,K,r,demand,distance,m,x,epochs);
+        
+        % Regional Facility Enhancement Procedure after the bees are done
+        enhancedColony=enhanceSolutionVector(updatedColony, P, K, distance, demand, r, m, x,epochs);
+        
+        %Best solutions achieved so far are kept intact
+        [colony(:,:,epochs),nectar,currentAllocation,currentFacilityIndices]=createNextGenerationFrom(enhancedColony,updatedColony,P,K,r,demand,distance,m,x,epochs);
+        
+        %Updating the allocation, facility indices, fitness of the best
+        %solution achieved so far
+        [bestAllocation,bestFacilityIndices,maxNectar]=updateBestSolution(currentAllocation,currentFacilityIndices,bestAllocation,bestFacilityIndices,m,demand,maxNectar);
+        
+        nectarMatrix(epochs,:,:)=nectar;  %fitness matrix holding the fitness of all the solutions in the updated colony
     end 
 end
 
-
-function[flag]=notTerminated(fitM,n)
+% function to check the stopping criterion is met or not
+% Inputs:- fitM: holding the fitness of all the solutions till n epochs
+% Outputs:- n: number of epochs executed
+% If the best solution so far achieved is not changed for the last 100
+% iterations it returns false otherwise true
+function[flag]=notTerminated(nectarMatrix,noOfIteration)
     flag=true;
-    if n <=100
+    if noOfIteration <=100  % as checking for last 100 gen, so if n<=100 it just returns true
         return;
     end
-    mx=max(fitM(n,:));
-    for i=n-1:-1:n-100
-        temp=max(fitM(i,:));
-        if temp<=mx
+    bestNectarOfLastIteration=max(nectarMatrix(noOfIteration,:));
+    for i=noOfIteration-1:-1:noOfIteration-100
+        thisIterationNectar=max(nectarMatrix(i,:));
+        if thisIterationNectar<=bestNectarOfLastIteration
             flag=false;
         else
             flag=true;
@@ -191,13 +225,23 @@ function[flag]=notTerminated(fitM,n)
     end
 end
 
-function [population] = initialize(P,K,nrows)
-    population=zeros(P,K,1);
+%func to initialize the colony with random facility indices of size PxK
+%returns the initialized colony
+function [colony] = initialize(P,K,m)
+    colony=zeros(P,K,1);
+    
+    %for each solution vector, it initializes with K possible candidate
+    %facilities randomly from 1 to m i.e. within the customers
     for i=1:P
-        population(i,:,1)=randperm(nrows,K);
+        colony(i,:,1)=randperm(m,K);
     end
 end
-function[bestAllocation,bestFacilityIndices,fitmax] = updateBestSolution(currentAllocation,currentFacilityIndices,bestAllocation,bestFacilityIndices,m,demand,fitmax)
+
+%function to update the allocation matrix, facility indices opened and max
+%nectar of the best solution till date
+%Inputs:- currentAllocation, currentFacilityIndices, bestAllocation, bestFacilityIndices, m, demand, maxNectar
+%Outputs:- updated bestAllocation, bestFacilityIndices, maxNectar
+function[bestAllocation,bestFacilityIndices,maxNectar] = updateBestSolution(currentAllocation,currentFacilityIndices,bestAllocation,bestFacilityIndices,m,demand,maxNectar)
     nectarBest=0;
     nectarCurrent=0;
     for i=1:m
@@ -209,27 +253,35 @@ function[bestAllocation,bestFacilityIndices,fitmax] = updateBestSolution(current
         end
     end
     if nectarBest<nectarCurrent
-        fitmax=nectarCurrent;
+        maxNectar=nectarCurrent;
         bestAllocation=currentAllocation;
         bestFacilityIndices=currentFacilityIndices;
     end
 end
 
-function [population] = enhanceSolutionVector(population, P, K, distance, demand, r, nrows, x,epochs)
-    N =round(nrows/10);
+% function to apply the proposed regional facility enhancement procedure
+% for each facility of each solution vector of the colony, it greedily
+% chooses between one candidate neighbour facility from 10% neighbours and
+% forms the enhanced colony
+% It returns the enhanced colony of the regional facility enhancement procedure
+
+function [enhancedColony] = enhanceSolutionVector(enhancedColony, P, K, distance, demand, r, m, x,epochs)
+    N =round(m/10);
     for i = 1:P
         for j = 1:K
-            neighbours = getNeighbours(population(i,j), N, distance, nrows);
+            neighbours = getNeighbours(enhancedColony(i,j), N, distance, m);
             
             neighbourhood = randsample(neighbours, 1);
-            newPopulation = population;
+            newPopulation = enhancedColony;
             newPopulation(i,j) = neighbourhood;
-            if getFitness(newPopulation(i,:), K, r, demand, distance, nrows, x,epochs) >= getFitness(population(i,:), K, r, demand, distance, nrows, x,epochs)
-                population(i,:) = newPopulation(i,:);
+            if getFitness(newPopulation(i,:), K, r, demand, distance, m, x,epochs) >= getFitness(enhancedColony(i,:), K, r, demand, distance, m, x,epochs)
+                enhancedColony(i,:) = newPopulation(i,:);
             end
         end
     end
 end
+
+
 function [population,counter] = employeedBees(population, P, K, distance, demand, r, nrows, x,epochs,counter)
     newPopulation = population;
     for i=1:P

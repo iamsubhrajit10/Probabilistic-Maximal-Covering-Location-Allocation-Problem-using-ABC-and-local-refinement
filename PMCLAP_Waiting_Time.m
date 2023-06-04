@@ -1,7 +1,7 @@
 % provide the path of instance file e.g. 818 file
 %file can be downloaded from: http://www.lac.inpe.br/~lorena/instances/mcover/Coord/coord818.txt
 format long g;
-filepath="C:\MCLP_GA\818.txt";
+filepath="C:\MCLP_GA\30.txt";
 
 
 sumFitness=0;
@@ -12,20 +12,20 @@ counters=zeros(1,3);
 cumProbabilites=zeros(1,4);
 
 %provide the name of instance to be executed
-instance='818_20_1_42_85';
+instance='30_5_1_40_85';
 bestFitness=0;
 achieveCount=0;
 bestTime=0;
 
 %set number of times the instance should be executed
-noOfExecution=2;
+noOfExecution=10;
 fitnessTrack=zeros(1,noOfExecution);
 timeTrack=zeros(1,noOfExecution);
 bestEpochs=0;
 totalEpochs=0;
 for i=1:noOfExecution
     tic;
-    [currentAllocation,currentFacilityIndices,fitness,currentEpochs]=PMCLAP_ABC(filepath,20,42,0.85);
+    [currentAllocation,currentFacilityIndices,fitness,currentEpochs]=PMCLAP_ABC(filepath,5,40,0.85);
     currentTime=toc;
     sumFitness=sumFitness+fitness;
     totalTime=totalTime+currentTime;
@@ -36,12 +36,12 @@ for i=1:noOfExecution
         bestFacilityIndices=currentFacilityIndices;
         if i == 1 || currentTime<bestTime
            if i==1 || bestEpochs>currentEpochs
-                bestEpcohs=currentEpochs;
+                bestEpochs=currentEpochs;
            end
            bestTime=currentTime;
         end
     end
-    if fitness >=61900
+    if fitness >=3610
         achieveCount=achieveCount+1;
     end
     
@@ -69,7 +69,7 @@ standardDevTime=(y/noOfExecution)^0.5;
 averageEpochs=totalEpochs/noOfExecution;
 
 % set the path where output results to be written
-baseDirectory = 'C:\MCLP_GA\818R\';
+baseDirectory = 'C:\MCLP_GA\30R\';
 indiceFileName = sprintf('%s_%s.txt',  'indice', instance);
 allocationFileName=sprintf('%s_%s.txt',  'allocation', instance);
 metadataFileName=sprintf('%s_%s.txt',  'metadata', instance);
@@ -94,14 +94,14 @@ fullFilePath = fullfile(baseDirectory, metadataFileName);
 fileID = fopen(fullFilePath, 'w');
 % Write the metadata to the file
 fprintf(fileID, 'Best Fitness: %f\n', bestFitness);
-fprintf(fileID, 'Average Fitness: %f\n', averageFitness);
-fprintf(fileID, 'Std. Dev Fitness: %f\n', standardDevFitness);
+fprintf(fileID, 'Average Fitness: %f\n', setPrecision(averageFitness));
+fprintf(fileID, 'Std. Dev Fitness: %f\n', setPrecision(standardDevFitness));
 fprintf(fileID, 'Best Instance Min Time: %f\n', bestTime);
-fprintf(fileID, 'Average Time: %f\n', averageTime);
-fprintf(fileID, 'Std. Dev Time: %f\n', standardDevTime);
+fprintf(fileID, 'Average Time: %f\n', setPrecision(averageTime));
+fprintf(fileID, 'Std. Dev Time: %f\n', setPrecision(standardDevTime));
 fprintf(fileID, 'Best Fitness Count: %d\n', achieveCount);
 fprintf(fileID, 'Epoch of Best Sol: %d\n',bestEpochs);
-fprintf(fileID, 'Average Epochs: %f\n',averageEpochs);
+fprintf(fileID, 'Average Epochs: %f\n',setPrecision(averageEpochs));
 % Close the file
 fclose(fileID);
 fprintf('\nSuccessfully Executed %s\n',instance);
@@ -122,10 +122,10 @@ fprintf('\nSuccessfully Executed %s\n',instance);
 %Outputs:- epochs: contains the number of iterations executed till convergence
 function[bestAllocation,bestFacilityIndices,maxNectar,epochs]=PMCLAP_ABC(filepath,K,tau,alpha)
     P=20;   %Colony size
-    mu=96;  %mu that appears in the formulation
-    r=750;  %r radius in m
+    mu=72;  %mu that appears in the formulation
+    r=1.5;  %r radius in m
     x=mu+((log(1-alpha))*(1440/tau));   %RHS constraint calculation of constraint of waiting time
-    x = formatToTwoDecimalPlaces(x);    %Precision to two decimal places
+    x = setPrecision(x);    %Precision to two decimal places
     data=readmatrix(filepath);          %Reading the data matrix of customers; 
                                         %It contains m rows of <x y demand> where x,y are the coordinates  
 
@@ -139,11 +139,11 @@ function[bestAllocation,bestFacilityIndices,maxNectar,epochs]=PMCLAP_ABC(filepat
     for i=1:m
         for j=1:m
             if i~=j 
-                distance(i,j)=formatToTwoDecimalPlaces((formatToTwoDecimalPlaces((data(i,1)-data(j,1))^2)+formatToTwoDecimalPlaces((data(i,2)-data(j,2))^2))^0.5);
+                distance(i,j)=setPrecision((setPrecision((data(i,1)-data(j,1))^2)+setPrecision((data(i,2)-data(j,2))^2))^0.5);
             end
         end
     end
-    distance=formatToTwoDecimalPlaces(distance);
+    distance=setPrecision(distance);
    
     bestAllocation=zeros(1,m);      %to hold allocation of customers to facilities of best solution
     bestFacilityIndices=zeros(1,K); %to hold facility indices of best solution
@@ -168,7 +168,7 @@ function[bestAllocation,bestFacilityIndices,maxNectar,epochs]=PMCLAP_ABC(filepat
     nectarMatrix=zeros(1000,P,1);
     nectarMatrix(1,:,:)=nectar;
     
-    %to hold the abondant counter values of the P solutions of the colony
+    %to hold the abondonment counter values of the P solutions of the colony
     abandonmentCounter=zeros(1,P);
     
     %execute till stopping criterion is met
@@ -205,17 +205,18 @@ function[bestAllocation,bestFacilityIndices,maxNectar,epochs]=PMCLAP_ABC(filepat
 end
 
 % function to check the stopping criterion is met or not
-% Inputs:- fitM: holding the fitness of all the solutions till n epochs
+% Inputs:- fitM: holding the fitness of all the solutions till
+            % noOfIteration time
 % Outputs:- n: number of epochs executed
 % If the best solution so far achieved is not changed for the last 100
 % iterations it returns false otherwise true
 function[flag]=notTerminated(nectarMatrix,noOfIteration)
     flag=true;
-    if noOfIteration <=100  % as checking for last 100 gen, so if n<=100 it just returns true
+    if noOfIteration <=70  % as checking for last 100 gen, so if n<=100 it just returns true
         return;
     end
     bestNectarOfLastIteration=max(nectarMatrix(noOfIteration,:));
-    for i=noOfIteration-1:-1:noOfIteration-100
+    for i=noOfIteration-1:-1:noOfIteration-50
         thisIterationNectar=max(nectarMatrix(i,:));
         if thisIterationNectar<=bestNectarOfLastIteration
             flag=false;
@@ -322,11 +323,11 @@ function [oBColony,abandonemntCounter] = onlookerBees(oBColony, P, K, distance, 
     end
     %computes the probability of each solution in the colony with upto 2
     %decimal precision
-    probabilities=formatToTwoDecimalPlaces(probabilities);
+    probabilities=setPrecision(probabilities);
     %calculates cumulative probabilities and applies roulette wheel
     %selection
     cumulativeProb=cumsum(probabilities);
-    cumulativeProb=formatToTwoDecimalPlaces(cumulativeProb);
+    cumulativeProb=setPrecision(cumulativeProb);
     for k = 1:P
         i = find(cumulativeProb >= rand(), 1);
         if ~(i==0)
@@ -390,7 +391,7 @@ function[fitness,allocationMatrix]=getFitness(solution,K,r,demand,distance,nrows
    global counters;
    global cumProbabilites;
    tempAllocation=zeros(1,3,nrows);
-   if epochs<50
+   if epochs<20
         [fit1,tempAllocation(1,1,:)]=getFitness1(solution,K,r,demand,distance,nrows,x,epochs);
         [fit2,tempAllocation(1,2,:)]=getFitness2(solution,K,r,demand,distance,nrows,x);
         [fit3,tempAllocation(1,3,:)]=getFitness3(solution,K,r,demand,distance,nrows,x);
@@ -401,22 +402,22 @@ function[fitness,allocationMatrix]=getFitness(solution,K,r,demand,distance,nrows
                % initialize eps to a small positive constant
         eps = 1e-10;
 
-        if epochs ==50
+        if epochs ==20
             % compute probabilities using roulette wheel selection
             total = sum(counters(1,:));
-            probabilites(1) = (counters(1,1) + eps) / (total + 4*eps);
-            probabilites(2) = (counters(1,2) + eps) / (total + 4*eps); 
-            probabilites(3) = (counters(1,3) + eps) / (total + 4*eps); 
+            probabilites(1) = (counters(1,1) + eps) / (total + 3*eps);
+            probabilites(2) = (counters(1,2) + eps) / (total + 3*eps); 
+            probabilites(3) = (counters(1,3) + eps) / (total + 3*eps); 
 
             % compute cumulative probabilities
-            probabilites=formatToTwoDecimalPlaces(probabilites);
+            probabilites=setPrecision(probabilites);
             cumProbabilites = cumsum(probabilites);
-            cumProbabilites=formatToTwoDecimalPlaces(cumProbabilites);
+            cumProbabilites=setPrecision(cumProbabilites);
         end
         
         % select a solution based on the computed probabilities
         randProb = rand();
-        randProb = formatToTwoDecimalPlaces(randProb);
+        randProb = setPrecision(randProb);
         if randProb < cumProbabilites(1)
             index=1;
             [fitness,allocationMatrix] = getFitness1(solution, K, r, demand, distance, nrows, x,epochs);
@@ -435,11 +436,11 @@ function[fitness,allocationMatrix]=getFitness(solution,K,r,demand,distance,nrows
    end
 end
 
-function[fitness,allocation]=getFitness1(solution,K,r,demand,distance,nrows,x,epochs)
+function[fitness,allocation]=getFitness1(solution,K,r,demand,distance,m,x,epochs)
     val=0;
-    yM=zeros(K,1);
-    allocation=zeros(1,nrows);
-    for i=1:nrows
+    yM=zeros(m,1);
+    allocation=zeros(1,m);
+    for i=1:m
         if allocation(1,i) ==0
             [yM,facilityNo,flag] = getLessCongestedFacility(solution,i,distance,r,yM,x,demand,K);
              if flag
@@ -450,11 +451,11 @@ function[fitness,allocation]=getFitness1(solution,K,r,demand,distance,nrows,x,ep
     end
     fitness=val;
 end
-function[fitness,allocation]=getFitness2(solution,K,r,demand,distance,nrows,x)
+function[fitness,allocation]=getFitness2(solution,K,r,demand,distance,m,x)
     val=0;
-    yM=zeros(K,1);
-    allocation=zeros(1,nrows);
-    for i=1:nrows
+    yM=zeros(m,1);
+    allocation=zeros(1,m);
+    for i=1:m
         if allocation(1,i) ==0
             [yM,facilityNo,flag] = getRandomFacility(solution,i,distance,r,yM,x,demand,K);
              if flag
@@ -466,25 +467,25 @@ function[fitness,allocation]=getFitness2(solution,K,r,demand,distance,nrows,x)
     fitness=val;
 end
 
-function[fitness,allocation]=getFitness3(solution,K,r,demand,distance,nrows,x)
+function[fitness,allocation]=getFitness3(solution,K,r,demand,distance,m,x)
     val=0;
-    yM=zeros(K,1);
-    allocation=zeros(1,nrows);  
-    for j=1:nrows
+    yM=zeros(m,1);
+    allocation=zeros(1,m);  
+    for j=1:m
         weightedMatrix=zeros(1,K);
-        f=0.01*demand(j);
-        f=formatToTwoDecimalPlaces(f);
+        f=0.006*demand(j);
+        f=setPrecision(f);
         for i=1:K
-            if ~allocation(1,j) && formatToTwoDecimalPlaces(yM(i,1)+f)<=x && distance(solution(i),j)<=r
+            if ~allocation(1,j) && setPrecision(yM(solution(i),1)+f)<=x && distance(solution(i),j)<=r
                 weightedMatrix(1,i)=demand(j)/distance(solution(i),j);
             end
         end
-            weightedMatrix=formatToTwoDecimalPlaces(weightedMatrix);
+            weightedMatrix=setPrecision(weightedMatrix);
             [maxW,index]=max(weightedMatrix(1,:));
             if maxW ~=0
                 allocation(1,j)=solution(index);
                 val=val+demand(j);
-                yM(index,1)=formatToTwoDecimalPlaces(yM(index,1)+f);
+                yM(solution(index),1)=setPrecision(yM(solution(index),1)+f);
             end
     end
     fitness=val;
@@ -494,11 +495,11 @@ function[yM,facilityNo,flag]=getRandomFacility(solution,customer,distance,r,yM,x
   availableFacility=[];
   flag=false;
   facilityNo=-1;
-  f=0.01*demand(customer);
-  f=formatToTwoDecimalPlaces(f);
+  f=0.006*demand(customer);
+  f=setPrecision(f);
   j=1;
   for i=1:K
-      if distance(solution(i),customer)<=r && formatToTwoDecimalPlaces(yM(i,1)+f)<=x
+      if distance(solution(i),customer)<=r && setPrecision(yM(solution(i),1)+f)<=x
           availableFacility(end+1)=i;
           j=j+1;
           flag=true;
@@ -508,33 +509,33 @@ function[yM,facilityNo,flag]=getRandomFacility(solution,customer,distance,r,yM,x
   if flag
     randomIndex = randi(numel(availableFacility));
     facilityNo=availableFacility(randomIndex);
-    yM(facilityNo,1)=formatToTwoDecimalPlaces(yM(facilityNo,1)+f);
+    yM(solution(facilityNo),1)=setPrecision(yM(solution(facilityNo),1)+f);
   end
 end
 function[yM,facilityNo,flag]=getLessCongestedFacility(solution,customer,distance,r,yM,x,demand,K)
   availableFacility=zeros(1,K);
   flag=false;
   facilityNo=-1;
-  f=0.01*demand(customer);
-  f=formatToTwoDecimalPlaces(f);
+  f=0.006*demand(customer);
+  f=setPrecision(f);
   min=-1;
   for i=1:K
-      if distance(solution(i),customer)<=r && formatToTwoDecimalPlaces(yM(i,1)+f)<=x
-          min=yM(i,1);
+      if distance(solution(i),customer)<=r && setPrecision(yM(solution(i),1)+f)<=x
+          min=yM(solution(i),1);
           facilityNo=i;
           availableFacility(1,i)=1;
       end
   end
   if min~=-1
       for i=1:K
-          if availableFacility(1,i)==1 && min>yM(i,1)
-              min=yM(i,1);
+          if availableFacility(1,i)==1 && min>yM(solution(i),1)
+              min=yM(solution(i),1);
               facilityNo=i;
           end
       end
   end
   if facilityNo ~=-1
-      yM(facilityNo,1)=formatToTwoDecimalPlaces(yM(facilityNo,1)+f);
+      yM(solution(facilityNo),1)=setPrecision(yM(solution(facilityNo),1)+f);
       flag=true;
   end
 end
@@ -556,7 +557,7 @@ function [neighbour] = getNeighbours(facility, N, distance, nrows)
         neighbour = indices;
     end
 end
-function result = formatToTwoDecimalPlaces(value)
-    result = round(value,3);
+function result = setPrecision(value)
+    result = round(value,4);
 end
 

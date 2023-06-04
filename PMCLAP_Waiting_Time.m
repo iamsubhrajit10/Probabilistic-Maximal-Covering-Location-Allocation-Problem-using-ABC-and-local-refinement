@@ -2,12 +2,12 @@
 %file can be downloaded from: http://www.lac.inpe.br/~lorena/instances/mcover/Coord/coord818.txt
 format long g;
 filepath="C:\MCLP_GA\30.txt";
-
+global counters;
+global cumProbabilites;
 
 sumFitness=0;
 totalTime=0;
-global counters;
-global cumProbabilites;
+
 counters=zeros(1,3);
 cumProbabilites=zeros(1,4);
 
@@ -18,11 +18,13 @@ achieveCount=0;
 bestTime=0;
 
 %set number of times the instance should be executed
-noOfExecution=10;
+noOfExecution=30;
 fitnessTrack=zeros(1,noOfExecution);
 timeTrack=zeros(1,noOfExecution);
 bestEpochs=0;
 totalEpochs=0;
+
+
 for i=1:noOfExecution
     tic;
     [currentAllocation,currentFacilityIndices,fitness,currentEpochs]=PMCLAP_ABC(filepath,5,40,0.85);
@@ -41,7 +43,215 @@ for i=1:noOfExecution
            bestTime=currentTime;
         end
     end
-    if fitness >=3610
+    if fitness >=3050
+        achieveCount=achieveCount+1;
+    end
+    
+    fitnessTrack(1,i)=fitness;
+    timeTrack(1,i)=currentTime;
+end
+averageFitness=sumFitness/noOfExecution;
+
+% computation of std. dev. of fitness
+y=0;
+for i=1:noOfExecution
+    x=(fitnessTrack(1,i)-averageFitness)^2;
+    y=y+x;
+end
+standardDevFitness=(y/noOfExecution)^0.5;
+averageTime=totalTime/noOfExecution;
+
+% computation of std. dev. of time
+y=0;
+for i=1:noOfExecution
+    x=(timeTrack(1,i)-averageTime)^2;
+    y=y+x;
+end
+standardDevTime=(y/noOfExecution)^0.5;
+averageEpochs=totalEpochs/noOfExecution;
+
+% set the path where output results to be written
+baseDirectory = 'C:\MCLP_GA\30R\';
+indiceFileName = sprintf('%s_%s.txt',  'indice', instance);
+allocationFileName=sprintf('%s_%s.txt',  'allocation', instance);
+metadataFileName=sprintf('%s_%s.txt',  'metadata', instance);
+if ~isfolder(baseDirectory)
+    mkdir(baseDirectory);
+end
+fullFilePath = fullfile(baseDirectory, indiceFileName);
+fileID = fopen(fullFilePath, 'w');
+% Write the facilities opened to the file
+fprintf(fileID, '%d\t', bestFacilityIndices);
+% Close the file
+fclose(fileID);
+
+fullFilePath = fullfile(baseDirectory, allocationFileName);
+fileID = fopen(fullFilePath, 'w');
+% Write the allocation matrix data to the file
+fprintf(fileID, '%d\t', bestAllocation);
+% Close the file
+fclose(fileID);
+
+fullFilePath = fullfile(baseDirectory, metadataFileName);
+fileID = fopen(fullFilePath, 'w');
+% Write the metadata to the file
+fprintf(fileID, 'Best Fitness: %f\n', bestFitness);
+fprintf(fileID, 'Average Fitness: %f\n', setPrecision(averageFitness));
+fprintf(fileID, 'Std. Dev Fitness: %f\n', setPrecision(standardDevFitness));
+fprintf(fileID, 'Best Instance Min Time: %f\n', bestTime);
+fprintf(fileID, 'Average Time: %f\n', setPrecision(averageTime));
+fprintf(fileID, 'Std. Dev Time: %f\n', setPrecision(standardDevTime));
+fprintf(fileID, 'Best Fitness Count: %d\n', achieveCount);
+fprintf(fileID, 'Epoch of Best Sol: %d\n',bestEpochs);
+fprintf(fileID, 'Average Epochs: %f\n',setPrecision(averageEpochs));
+% Close the file
+fclose(fileID);
+fprintf('\nSuccessfully Executed %s\n',instance);
+
+
+
+sumFitness=0;
+totalTime=0;
+
+counters=zeros(1,3);
+cumProbabilites=zeros(1,4);
+
+%provide the name of instance to be executed
+instance='30_5_1_48_90';
+bestFitness=0;
+achieveCount=0;
+bestTime=0;
+
+%set number of times the instance should be executed
+noOfExecution=30;
+fitnessTrack=zeros(1,noOfExecution);
+timeTrack=zeros(1,noOfExecution);
+bestEpochs=0;
+totalEpochs=0;
+
+
+for i=1:noOfExecution
+    tic;
+    [currentAllocation,currentFacilityIndices,fitness,currentEpochs]=PMCLAP_ABC(filepath,5,48,0.90);
+    currentTime=toc;
+    sumFitness=sumFitness+fitness;
+    totalTime=totalTime+currentTime;
+    totalEpochs=totalEpochs+currentEpochs;
+    if bestFitness<=fitness
+        bestFitness=fitness;
+        bestAllocation=currentAllocation;
+        bestFacilityIndices=currentFacilityIndices;
+        if i == 1 || currentTime<bestTime
+           if i==1 || bestEpochs>currentEpochs
+                bestEpochs=currentEpochs;
+           end
+           bestTime=currentTime;
+        end
+    end
+    if fitness >=2400
+        achieveCount=achieveCount+1;
+    end
+    
+    fitnessTrack(1,i)=fitness;
+    timeTrack(1,i)=currentTime;
+end
+averageFitness=sumFitness/noOfExecution;
+
+% computation of std. dev. of fitness
+y=0;
+for i=1:noOfExecution
+    x=(fitnessTrack(1,i)-averageFitness)^2;
+    y=y+x;
+end
+standardDevFitness=(y/noOfExecution)^0.5;
+averageTime=totalTime/noOfExecution;
+
+% computation of std. dev. of time
+y=0;
+for i=1:noOfExecution
+    x=(timeTrack(1,i)-averageTime)^2;
+    y=y+x;
+end
+standardDevTime=(y/noOfExecution)^0.5;
+averageEpochs=totalEpochs/noOfExecution;
+
+% set the path where output results to be written
+baseDirectory = 'C:\MCLP_GA\30R\';
+indiceFileName = sprintf('%s_%s.txt',  'indice', instance);
+allocationFileName=sprintf('%s_%s.txt',  'allocation', instance);
+metadataFileName=sprintf('%s_%s.txt',  'metadata', instance);
+if ~isfolder(baseDirectory)
+    mkdir(baseDirectory);
+end
+fullFilePath = fullfile(baseDirectory, indiceFileName);
+fileID = fopen(fullFilePath, 'w');
+% Write the facilities opened to the file
+fprintf(fileID, '%d\t', bestFacilityIndices);
+% Close the file
+fclose(fileID);
+
+fullFilePath = fullfile(baseDirectory, allocationFileName);
+fileID = fopen(fullFilePath, 'w');
+% Write the allocation matrix data to the file
+fprintf(fileID, '%d\t', bestAllocation);
+% Close the file
+fclose(fileID);
+
+fullFilePath = fullfile(baseDirectory, metadataFileName);
+fileID = fopen(fullFilePath, 'w');
+% Write the metadata to the file
+fprintf(fileID, 'Best Fitness: %f\n', bestFitness);
+fprintf(fileID, 'Average Fitness: %f\n', setPrecision(averageFitness));
+fprintf(fileID, 'Std. Dev Fitness: %f\n', setPrecision(standardDevFitness));
+fprintf(fileID, 'Best Instance Min Time: %f\n', bestTime);
+fprintf(fileID, 'Average Time: %f\n', setPrecision(averageTime));
+fprintf(fileID, 'Std. Dev Time: %f\n', setPrecision(standardDevTime));
+fprintf(fileID, 'Best Fitness Count: %d\n', achieveCount);
+fprintf(fileID, 'Epoch of Best Sol: %d\n',bestEpochs);
+fprintf(fileID, 'Average Epochs: %f\n',setPrecision(averageEpochs));
+% Close the file
+fclose(fileID);
+fprintf('\nSuccessfully Executed %s\n',instance);
+
+sumFitness=0;
+totalTime=0;
+
+counters=zeros(1,3);
+cumProbabilites=zeros(1,4);
+
+%provide the name of instance to be executed
+instance='30_7_1_41_85';
+bestFitness=0;
+achieveCount=0;
+bestTime=0;
+
+%set number of times the instance should be executed
+noOfExecution=30;
+fitnessTrack=zeros(1,noOfExecution);
+timeTrack=zeros(1,noOfExecution);
+bestEpochs=0;
+totalEpochs=0;
+
+
+for i=1:noOfExecution
+    tic;
+    [currentAllocation,currentFacilityIndices,fitness,currentEpochs]=PMCLAP_ABC(filepath,7,41,0.85);
+    currentTime=toc;
+    sumFitness=sumFitness+fitness;
+    totalTime=totalTime+currentTime;
+    totalEpochs=totalEpochs+currentEpochs;
+    if bestFitness<=fitness
+        bestFitness=fitness;
+        bestAllocation=currentAllocation;
+        bestFacilityIndices=currentFacilityIndices;
+        if i == 1 || currentTime<bestTime
+           if i==1 || bestEpochs>currentEpochs
+                bestEpochs=currentEpochs;
+           end
+           bestTime=currentTime;
+        end
+    end
+    if fitness >=3050
         achieveCount=achieveCount+1;
     end
     
@@ -212,7 +422,7 @@ end
 % iterations it returns false otherwise true
 function[flag]=notTerminated(nectarMatrix,noOfIteration)
     flag=true;
-    if noOfIteration <=70  % as checking for last 100 gen, so if n<=100 it just returns true
+    if noOfIteration <=100  % as checking for last 100 gen, so if n<=100 it just returns true
         return;
     end
     bestNectarOfLastIteration=max(nectarMatrix(noOfIteration,:));
@@ -268,16 +478,19 @@ end
 % It returns the enhanced colony of the regional facility enhancement procedure
 
 function [enhancedColony] = enhanceSolutionVector(enhancedColony, P, K, distance, demand, r, m, x,epochs)
-    N =round(m/10);
+    N =round(m/2);
     for i = 1:P
         for j = 1:K
-            neighbours = getNeighbours(enhancedColony(i,j), N, distance, m);
-            
-            neighbourhood = randsample(neighbours, 1);
-            newPopulation = enhancedColony;
-            newPopulation(i,j) = neighbourhood;
-            if getFitness(newPopulation(i,:), K, r, demand, distance, m, x,epochs) >= getFitness(enhancedColony(i,:), K, r, demand, distance, m, x,epochs)
-                enhancedColony(i,:) = newPopulation(i,:);
+            neighbours = getNeighbours(enhancedColony(i,j),enhancedColony(i,:), N, distance, m);
+            for k=1:N
+                neighbourhood = neighbours(k);
+                newColony = enhancedColony;
+                newColony(i,j) = neighbourhood;
+                newNectar=getFitness(newColony(i,:), K, r, demand, distance, m, x,epochs);
+                oldNectar=getFitness(enhancedColony(i,:), K, r, demand, distance, m, x,epochs);
+                if  newNectar>=oldNectar
+                    enhancedColony(i,:) = newColony(i,:);
+                end
             end
         end
     end
@@ -445,6 +658,7 @@ function[fitness,allocation]=getFitness1(solution,K,r,demand,distance,m,x,epochs
             [yM,facilityNo,flag] = getLessCongestedFacility(solution,i,distance,r,yM,x,demand,K);
              if flag
                 val=val+demand(i);
+                demand(i)=0;
                 allocation(1,i)=solution(facilityNo);
             end
         end
@@ -460,6 +674,7 @@ function[fitness,allocation]=getFitness2(solution,K,r,demand,distance,m,x)
             [yM,facilityNo,flag] = getRandomFacility(solution,i,distance,r,yM,x,demand,K);
              if flag
                 val=val+demand(i);
+                demand(i)=0;
                 allocation(1,i)=solution(facilityNo);
             end
         end
@@ -485,6 +700,7 @@ function[fitness,allocation]=getFitness3(solution,K,r,demand,distance,m,x)
             if maxW ~=0
                 allocation(1,j)=solution(index);
                 val=val+demand(j);
+                demand(i)=0;
                 yM(solution(index),1)=setPrecision(yM(solution(index),1)+f);
             end
     end
@@ -541,18 +757,18 @@ function[yM,facilityNo,flag]=getLessCongestedFacility(solution,customer,distance
 end
 
 
-function [neighbour] = getNeighbours(facility, N, distance, nrows)
-    d = Inf(nrows, 1);
-    for i = 1:nrows
-        if facility ~= i
+function [neighbour] = getNeighbours(facility, solution, N, distance, m)
+    d = Inf(m, 1);
+    for i = 1:m
+        if facility ~= i && ~ismember(i, solution)
             d(i) = distance(facility, i);
         end
     end
     
-    if N >= nrows
-        neighbour = setdiff(1:nrows, facility);
+    if N >= m
+        neighbour = setdiff(1:m, facility);
     else
-        k = round(nrows * N / 100);
+        k = N;
         [~, indices] = mink(d, k);
         neighbour = indices;
     end

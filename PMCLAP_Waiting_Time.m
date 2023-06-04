@@ -12,7 +12,7 @@ counters=zeros(1,3);
 cumProbabilites=zeros(1,4);
 
 %provide the name of instance to be executed
-instance='818_10_1_48_90';
+instance='818_20_1_42_85';
 bestFitness=0;
 achieveCount=0;
 bestTime=0;
@@ -25,7 +25,7 @@ bestEpochs=0;
 totalEpochs=0;
 for i=1:noOfExecution
     tic;
-    [currentAllocation,currentFacilityIndices,fitness,currentEpochs]=PMCLAP_ABC(filepath,10,48,0.90);
+    [currentAllocation,currentFacilityIndices,fitness,currentEpochs]=PMCLAP_ABC(filepath,20,42,0.85);
     currentTime=toc;
     sumFitness=sumFitness+fitness;
     totalTime=totalTime+currentTime;
@@ -34,14 +34,14 @@ for i=1:noOfExecution
         bestFitness=fitness;
         bestAllocation=currentAllocation;
         bestFacilityIndices=currentFacilityIndices;
-        if i == 1 || currentTime>bestTime
+        if i == 1 || currentTime<bestTime
            if i==1 || bestEpochs>currentEpochs
                 bestEpcohs=currentEpochs;
            end
            bestTime=currentTime;
         end
     end
-    if fitness >=26920
+    if fitness >=61900
         achieveCount=achieveCount+1;
     end
     

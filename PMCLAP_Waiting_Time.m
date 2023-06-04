@@ -11,13 +11,13 @@ counters=zeros(1,3);
 cumProbabilites=zeros(1,4);
 
 %provide the name of instance to be executed
-instance='818_50_1_48_90';
+instance='818_50_1_49_90';
 bestFitness=0;
 achieveCount=0;
 bestTime=0;
 
 %set number of times the instance should be executed
-noOfExecution=2;
+noOfExecution=10;
 fitnessTrack=zeros(1,noOfExecution);
 timeTrack=zeros(1,noOfExecution);
 bestEpochs=0;
@@ -40,7 +40,7 @@ for i=1:noOfExecution
            bestTime=currentTime;
         end
     end
-    if fitness >=134600
+    if fitness >=141650
         achieveCount=achieveCount+1;
     end
     
@@ -281,9 +281,11 @@ function [enhancedColony] = enhanceSolutionVector(enhancedColony, P, K, distance
     end
 end
 
-
-function [population,counter] = employeedBees(population, P, K, distance, demand, r, nrows, x,epochs,counter)
-    newPopulation = population;
+% employeed bees phase works as per standard procedure explained in the
+% paper
+% returns the updated colony and abondonmentCounter values after employeed bees phase is done
+function [eBColony,abandonmentCounter] = employeedBees(eBColony, P, K, distance, demand, r, m, x,epochs,abandonmentCounter)
+    newColony = eBColony;
     for i=1:P
         for j=1:K
             k=i;
@@ -291,28 +293,31 @@ function [population,counter] = employeedBees(population, P, K, distance, demand
                 k = randi(P);  % Generate a random number between 1 and P
             end
             phi=randi([-1 1]);
-            v=round(population(i,j)+phi*(population(i,j)-population(k,j)));
-            if v>0 && v<=nrows
-                newPopulation(i,j) = v;
+            %creates a new solution vector as per employe bee phase
+            y=round(eBColony(i,j)+phi*(eBColony(i,j)-eBColony(k,j)));
+            if y>0 && y<=m
+                newColony(i,j) = y;
             end
         end
-        if getFitness(newPopulation(i,:), K, r, demand, distance, nrows, x,epochs) > getFitness(population(i,:), K, r, demand, distance, nrows, x,epochs)
-              population(i,:) = newPopulation(i,:);
+        %greedily chooses between newColony and old eBColony
+        if getFitness(newColony(i,:), K, r, demand, distance, m, x,epochs) > getFitness(eBColony(i,:), K, r, demand, distance, m, x,epochs)
+              eBColony(i,:) = newColony(i,:);
         else
-              counter(1,i)=counter(1,i)+1;
+              abandonmentCounter(1,i)=abandonmentCounter(1,i)+1;    % updates the abandonment counter
         end
     end
 end
 
+% onlooker bees phase as per standard onlooker bees procedure explained in
+% the paper
+% returns the updated colony and abaondoment counter after onlooker bees phase
 
-
-function [newPopulation,counter] = onlookerBees(population, P, K, distance, demand, r, nrows, x,epochs,counter)
-    chosenPopulation = population;
+function [oBColony,counter] = onlookerBees(oBColony, P, K, distance, demand, r, nrows, x,epochs,counter)
+    newColony = oBColony;
     probabilities = zeros(P, 1);
-    newPopulation=population;
-    sumFitness = sum(computePopulationFitness(population,P,K,r,demand,distance,nrows,x,epochs));
+    sumFitness = sum(computePopulationFitness(oBColony,P,K,r,demand,distance,nrows,x,epochs));
     for i = 1:P
-       probabilities(i) =getFitness(population(i,:), K, r, demand, distance, nrows, x,epochs) / sumFitness;
+       probabilities(i) =getFitness(oBColony(i,:), K, r, demand, distance, nrows, x,epochs) / sumFitness;
     end
     probabilities=formatToTwoDecimalPlaces(probabilities);
     cumulativeProb=cumsum(probabilities);
@@ -326,18 +331,16 @@ function [newPopulation,counter] = onlookerBees(population, P, K, distance, dema
                     j = randi(P);  % Generate a random number between 1 and P
                 end
                 phi=randi([-1 1]);
-                v=round(population(i,q)+phi*(population(i,q)-population(j,q)));
+                v=round(oBColony(i,q)+phi*(oBColony(i,q)-oBColony(j,q)));
                 if v>0 && v<=nrows
-                    chosenPopulation(k, :) = v;
+                    newColony(k, :) = v;
                 end
             end
-            if getFitness(chosenPopulation(k,:), K, r, demand, distance, nrows, x,epochs) >= getFitness(population(k,:), K, r, demand, distance, nrows, x,epochs)
-              newPopulation(i,:) = chosenPopulation(k,:);
+            if getFitness(newColony(k,:), K, r, demand, distance, nrows, x,epochs) >= getFitness(oBColony(k,:), K, r, demand, distance, nrows, x,epochs)
+              oBColony(i,:) = newColony(k,:);
             else
               counter(1,i)=counter(1,i)+1;
             end
-        else
-            chosenPopulation(k, :) = population(k, :);
         end
     end
 end

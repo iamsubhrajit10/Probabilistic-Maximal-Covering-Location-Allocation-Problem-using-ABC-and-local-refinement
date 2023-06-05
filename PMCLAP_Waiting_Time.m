@@ -1,7 +1,12 @@
 % provide the path of instance file e.g. 818 file
 %file can be downloaded from: http://www.lac.inpe.br/~lorena/instances/mcover/Coord/coord818.txt
 format long g;
-filepath="C:\MCLP_GA\30.txt";
+filepath="C:\MCLP_GA\324.txt";
+% delete(gcp('nocreate'))
+% numWorkers = 4; % Specify the desired number of workers
+% parpool(numWorkers); % Create a parallel pool with the specified number of workers
+
+
 global counters;
 global cumProbabilites;
 
@@ -9,10 +14,10 @@ sumFitness=0;
 totalTime=0;
 
 counters=zeros(1,3);
-cumProbabilites=zeros(1,4);
+cumProbabilites=zeros(1,3);
 
 %provide the name of instance to be executed
-instance='30_5_1_40_85';
+instance='324_10_1_40_85';
 bestFitness=0;
 achieveCount=0;
 bestTime=0;
@@ -27,7 +32,7 @@ totalEpochs=0;
 
 for i=1:noOfExecution
     tic;
-    [currentAllocation,currentFacilityIndices,fitness,currentEpochs]=PMCLAP_ABC(filepath,5,40,0.85);
+    [currentAllocation,currentFacilityIndices,fitness,currentEpochs]=PMCLAP_ABC(filepath,10,40,0.85);
     currentTime=toc;
     sumFitness=sumFitness+fitness;
     totalTime=totalTime+currentTime;
@@ -43,7 +48,7 @@ for i=1:noOfExecution
            bestTime=currentTime;
         end
     end
-    if fitness >=3050
+    if fitness >=27700
         achieveCount=achieveCount+1;
     end
     
@@ -71,7 +76,7 @@ standardDevTime=(y/noOfExecution)^0.5;
 averageEpochs=totalEpochs/noOfExecution;
 
 % set the path where output results to be written
-baseDirectory = 'C:\MCLP_GA\30R\';
+baseDirectory = 'C:\MCLP_GA\324R\';
 indiceFileName = sprintf('%s_%s.txt',  'indice', instance);
 allocationFileName=sprintf('%s_%s.txt',  'allocation', instance);
 metadataFileName=sprintf('%s_%s.txt',  'metadata', instance);
@@ -114,10 +119,10 @@ sumFitness=0;
 totalTime=0;
 
 counters=zeros(1,3);
-cumProbabilites=zeros(1,4);
+cumProbabilites=zeros(1,3);
 
 %provide the name of instance to be executed
-instance='30_5_1_48_90';
+instance='324_10_1_41_85';
 bestFitness=0;
 achieveCount=0;
 bestTime=0;
@@ -132,7 +137,7 @@ totalEpochs=0;
 
 for i=1:noOfExecution
     tic;
-    [currentAllocation,currentFacilityIndices,fitness,currentEpochs]=PMCLAP_ABC(filepath,5,48,0.90);
+    [currentAllocation,currentFacilityIndices,fitness,currentEpochs]=PMCLAP_ABC(filepath,10,41,0.85);
     currentTime=toc;
     sumFitness=sumFitness+fitness;
     totalTime=totalTime+currentTime;
@@ -148,7 +153,7 @@ for i=1:noOfExecution
            bestTime=currentTime;
         end
     end
-    if fitness >=2400
+    if fitness >=29360
         achieveCount=achieveCount+1;
     end
     
@@ -176,7 +181,7 @@ standardDevTime=(y/noOfExecution)^0.5;
 averageEpochs=totalEpochs/noOfExecution;
 
 % set the path where output results to be written
-baseDirectory = 'C:\MCLP_GA\30R\';
+baseDirectory = 'C:\MCLP_GA\324R\';
 indiceFileName = sprintf('%s_%s.txt',  'indice', instance);
 allocationFileName=sprintf('%s_%s.txt',  'allocation', instance);
 metadataFileName=sprintf('%s_%s.txt',  'metadata', instance);
@@ -217,10 +222,10 @@ sumFitness=0;
 totalTime=0;
 
 counters=zeros(1,3);
-cumProbabilites=zeros(1,4);
+cumProbabilites=zeros(1,3);
 
 %provide the name of instance to be executed
-instance='30_7_1_41_85';
+instance='324_10_1_42_85';
 bestFitness=0;
 achieveCount=0;
 bestTime=0;
@@ -235,7 +240,7 @@ totalEpochs=0;
 
 for i=1:noOfExecution
     tic;
-    [currentAllocation,currentFacilityIndices,fitness,currentEpochs]=PMCLAP_ABC(filepath,7,41,0.85);
+    [currentAllocation,currentFacilityIndices,fitness,currentEpochs]=PMCLAP_ABC(filepath,10,42,0.85);
     currentTime=toc;
     sumFitness=sumFitness+fitness;
     totalTime=totalTime+currentTime;
@@ -251,7 +256,7 @@ for i=1:noOfExecution
            bestTime=currentTime;
         end
     end
-    if fitness >=3050
+    if fitness >=30950
         achieveCount=achieveCount+1;
     end
     
@@ -279,7 +284,7 @@ standardDevTime=(y/noOfExecution)^0.5;
 averageEpochs=totalEpochs/noOfExecution;
 
 % set the path where output results to be written
-baseDirectory = 'C:\MCLP_GA\30R\';
+baseDirectory = 'C:\MCLP_GA\324R\';
 indiceFileName = sprintf('%s_%s.txt',  'indice', instance);
 allocationFileName=sprintf('%s_%s.txt',  'allocation', instance);
 metadataFileName=sprintf('%s_%s.txt',  'metadata', instance);
@@ -332,8 +337,8 @@ fprintf('\nSuccessfully Executed %s\n',instance);
 %Outputs:- epochs: contains the number of iterations executed till convergence
 function[bestAllocation,bestFacilityIndices,maxNectar,epochs]=PMCLAP_ABC(filepath,K,tau,alpha)
     P=20;   %Colony size
-    mu=72;  %mu that appears in the formulation
-    r=1.5;  %r radius in m
+    mu=96;  %mu that appears in the formulation
+    r=250;  %r radius in m
     x=mu+((log(1-alpha))*(1440/tau));   %RHS constraint calculation of constraint of waiting time
     x = setPrecision(x);    %Precision to two decimal places
     data=readmatrix(filepath);          %Reading the data matrix of customers; 
@@ -422,11 +427,11 @@ end
 % iterations it returns false otherwise true
 function[flag]=notTerminated(nectarMatrix,noOfIteration)
     flag=true;
-    if noOfIteration <=100  % as checking for last 100 gen, so if n<=100 it just returns true
+    if noOfIteration <=30  % as checking for last 100 gen, so if n<=100 it just returns true
         return;
     end
     bestNectarOfLastIteration=max(nectarMatrix(noOfIteration,:));
-    for i=noOfIteration-1:-1:noOfIteration-50
+    for i=noOfIteration-1:-1:noOfIteration-20
         thisIterationNectar=max(nectarMatrix(i,:));
         if thisIterationNectar<=bestNectarOfLastIteration
             flag=false;
@@ -477,24 +482,28 @@ end
 % forms the enhanced colony
 % It returns the enhanced colony of the regional facility enhancement procedure
 
-function [enhancedColony] = enhanceSolutionVector(enhancedColony, P, K, distance, demand, r, m, x,epochs)
-    N =round(m/2);
-    for i = 1:P
+function [enhancedColony] = enhanceSolutionVector(enhancedColony, P, K, distance, demand, r, m, x, epochs)
+    N = round(m/2);   
+    for i = 1:P      
         for j = 1:K
-            neighbours = getNeighbours(enhancedColony(i,j),enhancedColony(i,:), N, distance, m);
-            for k=1:N
-                neighbourhood = neighbours(k);
+            neighbours = getNeighbours(enhancedColony(i,j), enhancedColony(i,:), N, distance, m);           
+            fitnessArray = zeros(1, N);
+            newColonyArray =zeros(N,K);           
+            for k = 1:N
                 newColony = enhancedColony;
+                neighbourhood = neighbours(k);
                 newColony(i,j) = neighbourhood;
-                newNectar=getFitness(newColony(i,:), K, r, demand, distance, m, x,epochs);
-                oldNectar=getFitness(enhancedColony(i,:), K, r, demand, distance, m, x,epochs);
-                if  newNectar>=oldNectar
-                    enhancedColony(i,:) = newColony(i,:);
-                end
+                newColonyArray(k,:)=newColony(i,:);
+                fitnessArray(k) = getFitness1(newColony(i,:), K, r, demand, distance, m, x, epochs);
+            end   
+            [~, maxIndex] = max(fitnessArray);
+            if fitnessArray(maxIndex) >= getFitness1(enhancedColony(i,:), K, r, demand, distance, m, x, epochs)
+                enhancedColony(i,:) =newColonyArray(maxIndex,:);
             end
         end
     end
 end
+
 
 % employeed bees phase works as per standard procedure explained in the
 % paper
@@ -515,7 +524,7 @@ function [eBColony,abandonmentCounter] = employeedBees(eBColony, P, K, distance,
             end
         end
         %greedily chooses between newColony and old eBColony
-        if getFitness(newColony(i,:), K, r, demand, distance, m, x,epochs) > getFitness(eBColony(i,:), K, r, demand, distance, m, x,epochs)
+        if getFitness1(newColony(i,:), K, r, demand, distance, m, x,epochs) > getFitness1(eBColony(i,:), K, r, demand, distance, m, x,epochs)
               eBColony(i,:) = newColony(i,:);
         else
               abandonmentCounter(1,i)=abandonmentCounter(1,i)+1;    % updates the abandonment counter
@@ -527,12 +536,12 @@ end
 % the paper
 % returns the updated colony and abaondoment counter after onlooker bees phase
 
-function [oBColony,abandonemntCounter] = onlookerBees(oBColony, P, K, distance, demand, r, m, x,epochs,abandonemntCounter)
+function [oBColony,abandonmentCounter] = onlookerBees(oBColony, P, K, distance, demand, r, m, x,epochs,abandonmentCounter)
     newColony = oBColony;
     probabilities = zeros(P, 1);
     sumFitness = sum(computePopulationFitness(oBColony,P,K,r,demand,distance,m,x,epochs));
     for i = 1:P
-       probabilities(i) =getFitness(oBColony(i,:), K, r, demand, distance, m, x,epochs) / sumFitness;
+       probabilities(i) =getFitness1(oBColony(i,:), K, r, demand, distance, m, x,epochs) / sumFitness;
     end
     %computes the probability of each solution in the colony with upto 2
     %decimal precision
@@ -555,10 +564,10 @@ function [oBColony,abandonemntCounter] = onlookerBees(oBColony, P, K, distance, 
                     newColony(k, :) = v;
                 end
             end
-            if getFitness(newColony(k,:), K, r, demand, distance, m, x,epochs) >= getFitness(oBColony(k,:), K, r, demand, distance, m, x,epochs)
+            if getFitness1(newColony(k,:), K, r, demand, distance, m, x,epochs) >= getFitness1(oBColony(k,:), K, r, demand, distance, m, x,epochs)
               oBColony(i,:) = newColony(k,:);
             else
-              abandonemntCounter(1,i)=abandonemntCounter(1,i)+1;
+              abandonmentCounter(1,i)=abandonmentCounter(1,i)+1;
             end
         end
     end
@@ -604,7 +613,7 @@ function[fitness,allocationMatrix]=getFitness(solution,K,r,demand,distance,nrows
    global counters;
    global cumProbabilites;
    tempAllocation=zeros(1,3,nrows);
-   if epochs<20
+   if epochs<10
         [fit1,tempAllocation(1,1,:)]=getFitness1(solution,K,r,demand,distance,nrows,x,epochs);
         [fit2,tempAllocation(1,2,:)]=getFitness2(solution,K,r,demand,distance,nrows,x);
         [fit3,tempAllocation(1,3,:)]=getFitness3(solution,K,r,demand,distance,nrows,x);
@@ -615,7 +624,7 @@ function[fitness,allocationMatrix]=getFitness(solution,K,r,demand,distance,nrows
                % initialize eps to a small positive constant
         eps = 1e-10;
 
-        if epochs ==20
+        if epochs ==10
             % compute probabilities using roulette wheel selection
             total = sum(counters(1,:));
             probabilites(1) = (counters(1,1) + eps) / (total + 3*eps);
@@ -643,7 +652,7 @@ function[fitness,allocationMatrix]=getFitness(solution,K,r,demand,distance,nrows
             [fitness,allocationMatrix] = getFitness3(solution, K, r, demand, distance, nrows, x);
         else
             index=1;
-            [fitness,allocationMatrix] = getFitness1(solution, K, r, demand, distance, nrows, x);
+            [fitness,allocationMatrix] = getFitness1(solution, K, r, demand, distance, nrows, x,epochs);
         end
        counters(1,index)=counters(1,index)+1;
    end
@@ -688,7 +697,7 @@ function[fitness,allocation]=getFitness3(solution,K,r,demand,distance,m,x)
     allocation=zeros(1,m);  
     for j=1:m
         weightedMatrix=zeros(1,K);
-        f=0.006*demand(j);
+        f=0.01*demand(j);
         f=setPrecision(f);
         for i=1:K
             if ~allocation(1,j) && setPrecision(yM(solution(i),1)+f)<=x && distance(solution(i),j)<=r
@@ -711,7 +720,7 @@ function[yM,facilityNo,flag]=getRandomFacility(solution,customer,distance,r,yM,x
   availableFacility=[];
   flag=false;
   facilityNo=-1;
-  f=0.006*demand(customer);
+  f=0.01*demand(customer);
   f=setPrecision(f);
   j=1;
   for i=1:K
@@ -732,7 +741,7 @@ function[yM,facilityNo,flag]=getLessCongestedFacility(solution,customer,distance
   availableFacility=zeros(1,K);
   flag=false;
   facilityNo=-1;
-  f=0.006*demand(customer);
+  f=0.01*demand(customer);
   f=setPrecision(f);
   min=-1;
   for i=1:K
@@ -776,4 +785,3 @@ end
 function result = setPrecision(value)
     result = round(value,4);
 end
-

@@ -2,28 +2,18 @@
 %file can be downloaded from: http://www.lac.inpe.br/~lorena/instances/mcover/Coord/coord818.txt
 format long g;
 filepath="C:\MCLP_GA\324.txt";
-% delete(gcp('nocreate'))
-% numWorkers = 4; % Specify the desired number of workers
-% parpool(numWorkers); % Create a parallel pool with the specified number of workers
 
-
-global counters;
-global cumProbabilites;
 
 sumFitness=0;
 totalTime=0;
-
-counters=zeros(1,3);
-cumProbabilites=zeros(1,3);
-
 %provide the name of instance to be executed
-instance='324_10_1_40_85';
+instance='818_20_1_42_85';
 bestFitness=0;
 achieveCount=0;
 bestTime=0;
 
 %set number of times the instance should be executed
-noOfExecution=30;
+noOfExecution=10;
 fitnessTrack=zeros(1,noOfExecution);
 timeTrack=zeros(1,noOfExecution);
 bestEpochs=0;
@@ -32,7 +22,7 @@ totalEpochs=0;
 
 for i=1:noOfExecution
     tic;
-    [currentAllocation,currentFacilityIndices,fitness,currentEpochs]=PMCLAP_ABC(filepath,10,40,0.85);
+    [currentAllocation,currentFacilityIndices,fitness,currentEpochs]=PMCLAP_ABC(filepath,20,42,0.85);
     currentTime=toc;
     sumFitness=sumFitness+fitness;
     totalTime=totalTime+currentTime;
@@ -48,7 +38,7 @@ for i=1:noOfExecution
            bestTime=currentTime;
         end
     end
-    if fitness >=27700
+    if fitness >=61900
         achieveCount=achieveCount+1;
     end
     
@@ -76,7 +66,7 @@ standardDevTime=(y/noOfExecution)^0.5;
 averageEpochs=totalEpochs/noOfExecution;
 
 % set the path where output results to be written
-baseDirectory = 'C:\MCLP_GA\324R\';
+baseDirectory = 'C:\MCLP_GA\818R\';
 indiceFileName = sprintf('%s_%s.txt',  'indice', instance);
 allocationFileName=sprintf('%s_%s.txt',  'allocation', instance);
 metadataFileName=sprintf('%s_%s.txt',  'metadata', instance);
@@ -115,211 +105,7 @@ fprintf('\nSuccessfully Executed %s\n',instance);
 
 
 
-sumFitness=0;
-totalTime=0;
 
-counters=zeros(1,3);
-cumProbabilites=zeros(1,3);
-
-%provide the name of instance to be executed
-instance='324_10_1_41_85';
-bestFitness=0;
-achieveCount=0;
-bestTime=0;
-
-%set number of times the instance should be executed
-noOfExecution=30;
-fitnessTrack=zeros(1,noOfExecution);
-timeTrack=zeros(1,noOfExecution);
-bestEpochs=0;
-totalEpochs=0;
-
-
-for i=1:noOfExecution
-    tic;
-    [currentAllocation,currentFacilityIndices,fitness,currentEpochs]=PMCLAP_ABC(filepath,10,41,0.85);
-    currentTime=toc;
-    sumFitness=sumFitness+fitness;
-    totalTime=totalTime+currentTime;
-    totalEpochs=totalEpochs+currentEpochs;
-    if bestFitness<=fitness
-        bestFitness=fitness;
-        bestAllocation=currentAllocation;
-        bestFacilityIndices=currentFacilityIndices;
-        if i == 1 || currentTime<bestTime
-           if i==1 || bestEpochs>currentEpochs
-                bestEpochs=currentEpochs;
-           end
-           bestTime=currentTime;
-        end
-    end
-    if fitness >=29360
-        achieveCount=achieveCount+1;
-    end
-    
-    fitnessTrack(1,i)=fitness;
-    timeTrack(1,i)=currentTime;
-end
-averageFitness=sumFitness/noOfExecution;
-
-% computation of std. dev. of fitness
-y=0;
-for i=1:noOfExecution
-    x=(fitnessTrack(1,i)-averageFitness)^2;
-    y=y+x;
-end
-standardDevFitness=(y/noOfExecution)^0.5;
-averageTime=totalTime/noOfExecution;
-
-% computation of std. dev. of time
-y=0;
-for i=1:noOfExecution
-    x=(timeTrack(1,i)-averageTime)^2;
-    y=y+x;
-end
-standardDevTime=(y/noOfExecution)^0.5;
-averageEpochs=totalEpochs/noOfExecution;
-
-% set the path where output results to be written
-baseDirectory = 'C:\MCLP_GA\324R\';
-indiceFileName = sprintf('%s_%s.txt',  'indice', instance);
-allocationFileName=sprintf('%s_%s.txt',  'allocation', instance);
-metadataFileName=sprintf('%s_%s.txt',  'metadata', instance);
-if ~isfolder(baseDirectory)
-    mkdir(baseDirectory);
-end
-fullFilePath = fullfile(baseDirectory, indiceFileName);
-fileID = fopen(fullFilePath, 'w');
-% Write the facilities opened to the file
-fprintf(fileID, '%d\t', bestFacilityIndices);
-% Close the file
-fclose(fileID);
-
-fullFilePath = fullfile(baseDirectory, allocationFileName);
-fileID = fopen(fullFilePath, 'w');
-% Write the allocation matrix data to the file
-fprintf(fileID, '%d\t', bestAllocation);
-% Close the file
-fclose(fileID);
-
-fullFilePath = fullfile(baseDirectory, metadataFileName);
-fileID = fopen(fullFilePath, 'w');
-% Write the metadata to the file
-fprintf(fileID, 'Best Fitness: %f\n', bestFitness);
-fprintf(fileID, 'Average Fitness: %f\n', setPrecision(averageFitness));
-fprintf(fileID, 'Std. Dev Fitness: %f\n', setPrecision(standardDevFitness));
-fprintf(fileID, 'Best Instance Min Time: %f\n', bestTime);
-fprintf(fileID, 'Average Time: %f\n', setPrecision(averageTime));
-fprintf(fileID, 'Std. Dev Time: %f\n', setPrecision(standardDevTime));
-fprintf(fileID, 'Best Fitness Count: %d\n', achieveCount);
-fprintf(fileID, 'Epoch of Best Sol: %d\n',bestEpochs);
-fprintf(fileID, 'Average Epochs: %f\n',setPrecision(averageEpochs));
-% Close the file
-fclose(fileID);
-fprintf('\nSuccessfully Executed %s\n',instance);
-
-sumFitness=0;
-totalTime=0;
-
-counters=zeros(1,3);
-cumProbabilites=zeros(1,3);
-
-%provide the name of instance to be executed
-instance='324_10_1_42_85';
-bestFitness=0;
-achieveCount=0;
-bestTime=0;
-
-%set number of times the instance should be executed
-noOfExecution=30;
-fitnessTrack=zeros(1,noOfExecution);
-timeTrack=zeros(1,noOfExecution);
-bestEpochs=0;
-totalEpochs=0;
-
-
-for i=1:noOfExecution
-    tic;
-    [currentAllocation,currentFacilityIndices,fitness,currentEpochs]=PMCLAP_ABC(filepath,10,42,0.85);
-    currentTime=toc;
-    sumFitness=sumFitness+fitness;
-    totalTime=totalTime+currentTime;
-    totalEpochs=totalEpochs+currentEpochs;
-    if bestFitness<=fitness
-        bestFitness=fitness;
-        bestAllocation=currentAllocation;
-        bestFacilityIndices=currentFacilityIndices;
-        if i == 1 || currentTime<bestTime
-           if i==1 || bestEpochs>currentEpochs
-                bestEpochs=currentEpochs;
-           end
-           bestTime=currentTime;
-        end
-    end
-    if fitness >=30950
-        achieveCount=achieveCount+1;
-    end
-    
-    fitnessTrack(1,i)=fitness;
-    timeTrack(1,i)=currentTime;
-end
-averageFitness=sumFitness/noOfExecution;
-
-% computation of std. dev. of fitness
-y=0;
-for i=1:noOfExecution
-    x=(fitnessTrack(1,i)-averageFitness)^2;
-    y=y+x;
-end
-standardDevFitness=(y/noOfExecution)^0.5;
-averageTime=totalTime/noOfExecution;
-
-% computation of std. dev. of time
-y=0;
-for i=1:noOfExecution
-    x=(timeTrack(1,i)-averageTime)^2;
-    y=y+x;
-end
-standardDevTime=(y/noOfExecution)^0.5;
-averageEpochs=totalEpochs/noOfExecution;
-
-% set the path where output results to be written
-baseDirectory = 'C:\MCLP_GA\324R\';
-indiceFileName = sprintf('%s_%s.txt',  'indice', instance);
-allocationFileName=sprintf('%s_%s.txt',  'allocation', instance);
-metadataFileName=sprintf('%s_%s.txt',  'metadata', instance);
-if ~isfolder(baseDirectory)
-    mkdir(baseDirectory);
-end
-fullFilePath = fullfile(baseDirectory, indiceFileName);
-fileID = fopen(fullFilePath, 'w');
-% Write the facilities opened to the file
-fprintf(fileID, '%d\t', bestFacilityIndices);
-% Close the file
-fclose(fileID);
-
-fullFilePath = fullfile(baseDirectory, allocationFileName);
-fileID = fopen(fullFilePath, 'w');
-% Write the allocation matrix data to the file
-fprintf(fileID, '%d\t', bestAllocation);
-% Close the file
-fclose(fileID);
-
-fullFilePath = fullfile(baseDirectory, metadataFileName);
-fileID = fopen(fullFilePath, 'w');
-% Write the metadata to the file
-fprintf(fileID, 'Best Fitness: %f\n', bestFitness);
-fprintf(fileID, 'Average Fitness: %f\n', setPrecision(averageFitness));
-fprintf(fileID, 'Std. Dev Fitness: %f\n', setPrecision(standardDevFitness));
-fprintf(fileID, 'Best Instance Min Time: %f\n', bestTime);
-fprintf(fileID, 'Average Time: %f\n', setPrecision(averageTime));
-fprintf(fileID, 'Std. Dev Time: %f\n', setPrecision(standardDevTime));
-fprintf(fileID, 'Best Fitness Count: %d\n', achieveCount);
-fprintf(fileID, 'Epoch of Best Sol: %d\n',bestEpochs);
-fprintf(fileID, 'Average Epochs: %f\n',setPrecision(averageEpochs));
-% Close the file
-fclose(fileID);
-fprintf('\nSuccessfully Executed %s\n',instance);
 
 %PMCLAP_ABC funtion implements the proposed strategy for solving PMCLAP
 %Inputs:- filepath: path to the dataset of instance e.g. 818.txt and data is of size mx1
@@ -338,7 +124,7 @@ fprintf('\nSuccessfully Executed %s\n',instance);
 function[bestAllocation,bestFacilityIndices,maxNectar,epochs]=PMCLAP_ABC(filepath,K,tau,alpha)
     P=20;   %Colony size
     mu=96;  %mu that appears in the formulation
-    r=250;  %r radius in m
+    r=750;  %r radius in m
     x=mu+((log(1-alpha))*(1440/tau));   %RHS constraint calculation of constraint of waiting time
     x = setPrecision(x);    %Precision to two decimal places
     data=readmatrix(filepath);          %Reading the data matrix of customers; 
@@ -483,7 +269,7 @@ end
 % It returns the enhanced colony of the regional facility enhancement procedure
 
 function [enhancedColony] = enhanceSolutionVector(enhancedColony, P, K, distance, demand, r, m, x, epochs)
-    N = round(m/2);   
+    N = round(m/10);   
     for i = 1:P      
         for j = 1:K
             neighbours = getNeighbours(enhancedColony(i,j), enhancedColony(i,:), N, distance, m);           
@@ -613,7 +399,7 @@ function[fitness,allocationMatrix]=getFitness(solution,K,r,demand,distance,nrows
    global counters;
    global cumProbabilites;
    tempAllocation=zeros(1,3,nrows);
-   if epochs<10
+   if epochs<50
         [fit1,tempAllocation(1,1,:)]=getFitness1(solution,K,r,demand,distance,nrows,x,epochs);
         [fit2,tempAllocation(1,2,:)]=getFitness2(solution,K,r,demand,distance,nrows,x);
         [fit3,tempAllocation(1,3,:)]=getFitness3(solution,K,r,demand,distance,nrows,x);
@@ -624,7 +410,7 @@ function[fitness,allocationMatrix]=getFitness(solution,K,r,demand,distance,nrows
                % initialize eps to a small positive constant
         eps = 1e-10;
 
-        if epochs ==10
+        if epochs ==50
             % compute probabilities using roulette wheel selection
             total = sum(counters(1,:));
             probabilites(1) = (counters(1,1) + eps) / (total + 3*eps);
@@ -695,7 +481,7 @@ function[fitness,allocation]=getFitness3(solution,K,r,demand,distance,m,x)
     val=0;
     yM=zeros(m,1);
     allocation=zeros(1,m);  
-    for j=1:m
+    for j=m:-1:1
         weightedMatrix=zeros(1,K);
         f=0.01*demand(j);
         f=setPrecision(f);

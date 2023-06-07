@@ -121,7 +121,7 @@ fprintf('\nSuccessfully Executed %s\n',instance);
 function[bestAllocation,bestFacilityIndices,maxNectar,epochs]=PMCLAP_ABC(filepath,K,tau,alpha)
     P=20;   %Colony size
     mu=96;  %mu that appears in the formulation
-    r=250;  %r radius in m
+    r=750;  %r radius in m
     x=mu+((log(1-alpha))*(1440/tau));   %RHS constraint calculation of constraint of waiting time
     x = setPrecision(x);    %Precision to two decimal places
     data=readmatrix(filepath);          %Reading the data matrix of customers; 

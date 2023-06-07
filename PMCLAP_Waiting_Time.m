@@ -1,7 +1,7 @@
 % provide the path of instance file e.g. 818 file
 %file can be downloaded from: http://www.lac.inpe.br/~lorena/instances/mcover/Coord/coord818.txt
 format long g;
-filepath="C:\MCLP_GA\324.txt";
+filepath="C:\MCLP_GA\818.txt";
 
 
 sumFitness=0;
@@ -13,7 +13,7 @@ achieveCount=0;
 bestTime=0;
 
 %set number of times the instance should be executed
-noOfExecution=10;
+noOfExecution=30;
 fitnessTrack=zeros(1,noOfExecution);
 timeTrack=zeros(1,noOfExecution);
 bestEpochs=0;
@@ -104,9 +104,6 @@ fclose(fileID);
 fprintf('\nSuccessfully Executed %s\n',instance);
 
 
-
-
-
 %PMCLAP_ABC funtion implements the proposed strategy for solving PMCLAP
 %Inputs:- filepath: path to the dataset of instance e.g. 818.txt and data is of size mx1
 %Inputs:- K: number of facilities to be opened
@@ -124,7 +121,7 @@ fprintf('\nSuccessfully Executed %s\n',instance);
 function[bestAllocation,bestFacilityIndices,maxNectar,epochs]=PMCLAP_ABC(filepath,K,tau,alpha)
     P=20;   %Colony size
     mu=96;  %mu that appears in the formulation
-    r=750;  %r radius in m
+    r=250;  %r radius in m
     x=mu+((log(1-alpha))*(1440/tau));   %RHS constraint calculation of constraint of waiting time
     x = setPrecision(x);    %Precision to two decimal places
     data=readmatrix(filepath);          %Reading the data matrix of customers; 
@@ -189,18 +186,20 @@ function[bestAllocation,bestFacilityIndices,maxNectar,epochs]=PMCLAP_ABC(filepat
         [sBColony,abandonmentCounter]=scoutBees(oBColony,P,K,distance,demand,r,m,x,epochs,abandonmentCounter);
         
         %Best solutions achieved so far are kept intact
-        [updatedColony,~]=createNextGenerationFrom(sBColony,currentColony,P,K,r,demand,distance,m,x,epochs);
-        
+        [updatedColony,nectar,currentAllocation,currentFacilityIndices]=createNextGenerationFrom(sBColony,currentColony,P,K,r,demand,distance,m,x,epochs);
         % Regional Facility Enhancement Procedure after the bees are done
-        enhancedColony=enhanceSolutionVector(updatedColony, P, K, distance, demand, r, m, x,epochs);
-        
-        %Best solutions achieved so far are kept intact
-        [colony(:,:,epochs),nectar,currentAllocation,currentFacilityIndices]=createNextGenerationFrom(enhancedColony,updatedColony,P,K,r,demand,distance,m,x,epochs);
+        if epochs<=20
+            [enhancedColony]=enhanceSolutionVector(updatedColony, P, K, distance, demand, r, m, x,epochs);
+            %Best solutions achieved so far are kept intact
+            [colony(:,:,epochs),nectar,currentAllocation,currentFacilityIndices]=createNextGenerationFrom(enhancedColony,updatedColony,P,K,r,demand,distance,m,x,epochs);
+        else
+            colony(:,:,epochs)=updatedColony;
+        end
         
         %Updating the allocation, facility indices, fitness of the best
         %solution achieved so far
         [bestAllocation,bestFacilityIndices,maxNectar]=updateBestSolution(currentAllocation,currentFacilityIndices,bestAllocation,bestFacilityIndices,m,demand,maxNectar);
-        
+
         nectarMatrix(epochs,:,:)=nectar;  %fitness matrix holding the fitness of all the solutions in the updated colony
     end 
 end
@@ -213,11 +212,11 @@ end
 % iterations it returns false otherwise true
 function[flag]=notTerminated(nectarMatrix,noOfIteration)
     flag=true;
-    if noOfIteration <=30  % as checking for last 100 gen, so if n<=100 it just returns true
+    if noOfIteration <=150  % as checking for last 100 gen, so if n<=100 it just returns true
         return;
     end
     bestNectarOfLastIteration=max(nectarMatrix(noOfIteration,:));
-    for i=noOfIteration-1:-1:noOfIteration-20
+    for i=noOfIteration-1:-1:noOfIteration-100
         thisIterationNectar=max(nectarMatrix(i,:));
         if thisIterationNectar<=bestNectarOfLastIteration
             flag=false;
@@ -261,6 +260,7 @@ function[bestAllocation,bestFacilityIndices,maxNectar] = updateBestSolution(curr
         bestFacilityIndices=currentFacilityIndices;
     end
 end
+
 
 % function to apply the proposed regional facility enhancement procedure
 % for each facility of each solution vector of the colony, it greedily
@@ -362,7 +362,7 @@ end
 % Scout Bees Phase as per the standard procedure explained in the paper
 % Returns the updated colony and abandonement counter
 function [sBColony,abandonmentCounter] = scoutBees(sBColony,P, K, distance, demand, r, m, x,epochs,abandonmentCounter)
-    L = floor(0.1*K*P); % Abandonment limit
+    L = floor(0.6*K*P); % Abandonment limit
     for i=1:P
         if abandonmentCounter(1,i)> L
             sBColony(i, :) = randperm(m,K);
@@ -375,12 +375,35 @@ end
 % function to keep intanct the best solutions achieved so far
 % it merges the two colonies provided as argument and returns the top P solutions
 % from the merged colony of the both
-function [bestColony,fitnessBestPop,allocation,facilityIndice] = createNextGenerationFrom(colony1, colony2, P, K, r, demand, distance, m, x,epochs)
-    mergedColony = cat(1, colony1, colony2);
-    [fitnessMergedPop,allocation,facilityIndice] = computePopulationFitness(mergedColony, 2 * P, K, r, demand, distance, m, x,epochs);
-    [fitnessBestPop, indices] = maxk(fitnessMergedPop, P);
-    bestColony = mergedColony(indices,:);
+function [bestColony,fitnessColony,bestAllocation,bestFacilityIndice] = createNextGenerationFrom(colony1, colony2, P, K, r, demand, distance, m, x,epochs)
+    bestColony=zeros(P,K);
+    [fitnessColony1,allocation1,facilityIndice1] = computePopulationFitness(colony1, P, K, r, demand, distance, m, x,epochs);
+    [fitnessColony2,allocation2,facilityIndice2] = computePopulationFitness(colony2, P, K, r, demand, distance, m, x,epochs);
+    [fitness1, indice1] = max(fitnessColony1);
+    [fitness2, indice2] = max(fitnessColony2);
+    if fitness1>=fitness2
+        bestColony(1,:) = colony1(indice1,:);
+        fitnessColony(1,:)=fitness1;
+        bestAllocation=allocation1;
+        bestFacilityIndice=facilityIndice1;
+    else
+        bestColony(1,:) = colony2(indice2,:);
+        fitnessColony(1,:)=fitness2;
+        bestAllocation=allocation2;
+        bestFacilityIndice=facilityIndice2;
+    end
+    for i=2:P
+        bestColony(i,:)=colony1(i,:);
+        fitnessColony(i,:)=fitnessColony1(i);
+    end
 end
+% function [bestColony,fitnessBestPop,allocation,facilityIndice] = createNextGenerationFrom(colony1, colony2, P, K, r, demand, distance, m, x,epochs)
+%     mergedColony = cat(1, colony1, colony2);
+%     [fitnessMergedPop,allocation,facilityIndice] = computePopulationFitness(mergedColony, 2 * P, K, r, demand, distance, m, x,epochs);
+%     [fitnessBestPop, indices] = maxk(fitnessMergedPop, P);
+%     bestColony = mergedColony(indices,:);
+% end
+
 
 
 function [fit,allocation,facilityIndice]=computePopulationFitness(population,P,K,r,demand,distance,nrows,x,epochs)
@@ -396,52 +419,10 @@ function [fit,allocation,facilityIndice]=computePopulationFitness(population,P,K
     facilityIndice=population(best,:);
 end
 function[fitness,allocationMatrix]=getFitness(solution,K,r,demand,distance,nrows,x,epochs)
-   global counters;
-   global cumProbabilites;
-   tempAllocation=zeros(1,3,nrows);
-   if epochs<50
         [fit1,tempAllocation(1,1,:)]=getFitness1(solution,K,r,demand,distance,nrows,x,epochs);
-        [fit2,tempAllocation(1,2,:)]=getFitness2(solution,K,r,demand,distance,nrows,x);
-        [fit3,tempAllocation(1,3,:)]=getFitness3(solution,K,r,demand,distance,nrows,x);
-        [fitness,i]=max([fit1 fit2 fit3]);
+        [fit3,tempAllocation(1,2,:)]=getFitness3(solution,K,r,demand,distance,nrows,x);
+        [fitness,i]=max([fit1 fit3]);
         allocationMatrix=tempAllocation(1,i,:);
-        counters(1,i)=counters(1,i)+1;
-   else
-               % initialize eps to a small positive constant
-        eps = 1e-10;
-
-        if epochs ==50
-            % compute probabilities using roulette wheel selection
-            total = sum(counters(1,:));
-            probabilites(1) = (counters(1,1) + eps) / (total + 3*eps);
-            probabilites(2) = (counters(1,2) + eps) / (total + 3*eps); 
-            probabilites(3) = (counters(1,3) + eps) / (total + 3*eps); 
-
-            % compute cumulative probabilities
-            probabilites=setPrecision(probabilites);
-            cumProbabilites = cumsum(probabilites);
-            cumProbabilites=setPrecision(cumProbabilites);
-        end
-        
-        % select a solution based on the computed probabilities
-        randProb = rand();
-        randProb = setPrecision(randProb);
-        if randProb < cumProbabilites(1)
-            index=1;
-            [fitness,allocationMatrix] = getFitness1(solution, K, r, demand, distance, nrows, x,epochs);
-            
-        elseif randProb < cumProbabilites(2)
-            index=2;
-            [fitness,allocationMatrix] = getFitness2(solution, K, r, demand, distance, nrows, x);
-        elseif randProb < cumProbabilites(3)
-            index=3;
-            [fitness,allocationMatrix] = getFitness3(solution, K, r, demand, distance, nrows, x);
-        else
-            index=1;
-            [fitness,allocationMatrix] = getFitness1(solution, K, r, demand, distance, nrows, x,epochs);
-        end
-       counters(1,index)=counters(1,index)+1;
-   end
 end
 
 function[fitness,allocation]=getFitness1(solution,K,r,demand,distance,m,x,epochs)
@@ -478,10 +459,40 @@ function[fitness,allocation]=getFitness2(solution,K,r,demand,distance,m,x)
 end
 
 function[fitness,allocation]=getFitness3(solution,K,r,demand,distance,m,x)
+%     val=0;
+%     yM=zeros(m,1);
+%     allocation=zeros(1,m);  
+%     for j=1:K
+%         weightedMatrix=zeros(1,m);
+%         for i=1:m
+%             f=0.01*demand(i);
+%             f=setPrecision(f);
+%             if ~allocation(1,i) && setPrecision(yM(solution(j),1)+f)<=x && distance(solution(j),i)<=r
+%                 weightedMatrix(1,i)=demand(i)/distance(solution(j),i);
+%             end
+%         end
+%         [~,sortedIndices]=sort(weightedMatrix(:),'descend');
+%         count=1;
+%         while count <= m
+%             if distance(solution(j),sortedIndices(count))>r ||~demand(sortedIndices(count))
+%                 count=count+1;
+%             else
+%                 f=setPrecision(0.01*demand(sortedIndices(count)));
+%                 if ~allocation(1,sortedIndices(count)) &&setPrecision(yM(solution(j),1)+f)<=x 
+%                     val=val+demand(sortedIndices(count));
+%                     demand(sortedIndices(count))=0;
+%                     allocation(1,sortedIndices(count))=solution(j);
+%                     yM(solution(j))=setPrecision(yM(solution(j),1)+f);
+%                 end
+%                 count=count+1;
+%             end
+%         end
+%     end
+%     fitness=val;
     val=0;
     yM=zeros(m,1);
     allocation=zeros(1,m);  
-    for j=m:-1:1
+    for j=1:m
         weightedMatrix=zeros(1,K);
         f=0.01*demand(j);
         f=setPrecision(f);
@@ -571,3 +582,4 @@ end
 function result = setPrecision(value)
     result = round(value,4);
 end
+

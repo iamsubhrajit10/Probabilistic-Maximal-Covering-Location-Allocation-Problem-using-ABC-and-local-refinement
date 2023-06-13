@@ -1,16 +1,16 @@
 % provide the path of instance file e.g. 818 file
 %file can be downloaded from: http://www.lac.inpe.br/~lorena/instances/mcover/Coord/coord818.txt
 format long g;
-filepath="C:\MCLP_GA\818.txt";
+filepath="C:\MCLP_GA\30.txt";
 global counters;
 global cumProbabilites;
 counters=zeros(1,3);
-cumProbabilites=zeros(1,4);
+cumProbabilites=zeros(1,3);
 
 sumFitness=0;
 totalTime=0;
 %provide the name of instance to be executed
-instance='818_20_1_42_85';
+instance='30_6_1_41_85';
 bestFitness=0;
 achieveCount=0;
 bestTime=0;
@@ -25,7 +25,7 @@ totalEpochs=0;
 
 for i=1:noOfExecution
     tic;
-    [currentAllocation,currentFacilityIndices,fitness,currentEpochs]=PMCLAP_ABC(filepath,20,42,0.85);
+    [currentAllocation,currentFacilityIndices,fitness,currentEpochs]=PMCLAP_ABC(filepath,6,41,0.85);
     currentTime=toc;
     sumFitness=sumFitness+fitness;
     totalTime=totalTime+currentTime;
@@ -41,12 +41,13 @@ for i=1:noOfExecution
            bestTime=currentTime;
         end
     end
-    if fitness >=61900
+    if fitness >=5330
         achieveCount=achieveCount+1;
     end
     
     fitnessTrack(1,i)=fitness;
     timeTrack(1,i)=currentTime;
+    fprintf('\n Executed %dth\n',i);
 end
 averageFitness=sumFitness/noOfExecution;
 
@@ -69,7 +70,7 @@ standardDevTime=(y/noOfExecution)^0.5;
 averageEpochs=totalEpochs/noOfExecution;
 
 % set the path where output results to be written
-baseDirectory = 'C:\MCLP_GA\818R\';
+baseDirectory = 'C:\MCLP_GA\30R\';
 indiceFileName = sprintf('%s_%s.txt',  'indice', instance);
 allocationFileName=sprintf('%s_%s.txt',  'allocation', instance);
 metadataFileName=sprintf('%s_%s.txt',  'metadata', instance);
@@ -123,8 +124,8 @@ fprintf('\nSuccessfully Executed %s\n',instance);
 %Outputs:- epochs: contains the number of iterations executed till convergence
 function[bestAllocation,bestFacilityIndices,maxNectar,epochs]=PMCLAP_ABC(filepath,K,tau,alpha)
     P=20;   %Colony size
-    mu=96;  %mu that appears in the formulation
-    r=750;  %r radius in m
+    mu=72;  %mu that appears in the formulation
+    r=1.5;  %r radius in m
     x=mu+((log(1-alpha))*(1440/tau));   %RHS constraint calculation of constraint of waiting time
     x = setPrecision(x);    %Precision to two decimal places
     data=readmatrix(filepath);          %Reading the data matrix of customers; 
@@ -472,7 +473,7 @@ function[fitness,allocation]=getFitness3(solution,K,r,demand,distance,m,x)
     for j=1:K
         weightedMatrix=zeros(1,m);
         for i=1:m
-            f=0.01*demand(i);
+            f=0.006*demand(i);
             f=setPrecision(f);
             if ~allocation(1,i) && setPrecision(yM(solution(j),1)+f)<=x && distance(solution(j),i)<=r
                 weightedMatrix(1,i)=demand(i)/distance(solution(j),i);
@@ -524,7 +525,7 @@ function[yM,facilityNo,flag]=getRandomFacility(solution,customer,distance,r,yM,x
   availableFacility=[];
   flag=false;
   facilityNo=-1;
-  f=0.01*demand(customer);
+  f=0.006*demand(customer);
   f=setPrecision(f);
   j=1;
   for i=1:K
@@ -545,7 +546,7 @@ function[yM,facilityNo,flag]=getLessCongestedFacility(solution,customer,distance
   availableFacility=zeros(1,K);
   flag=false;
   facilityNo=-1;
-  f=0.01*demand(customer);
+  f=0.006*demand(customer);
   f=setPrecision(f);
   min=-1;
   for i=1:K

@@ -1,4 +1,4 @@
-filepath="C:\MCLP_GA\818.txt";
+filepath="C:\MCLP_GA\30.txt";
 
 sumFitness=0;
 totalTime=0;
@@ -6,18 +6,18 @@ global counters;
 global cumProbabilites;
 counters=zeros(1,3);
 cumProbabilites=zeros(1,4);
-instance='818_20_0_0_95';
+instance='30_2_0_2_95';
 bestFitness=0;
 achieveCount=0;
 bestTime=0;
-noOfExecution=30;
+noOfExecution=10;
 fitnessTrack=zeros(1,noOfExecution);
 timeTrack=zeros(1,noOfExecution);
 bestEpochs=0;
 totalEpochs=0;
 for i=1:noOfExecution
     tic;
-    [currentAllocation,currentFacilityIndices,fitness,currentEpochs]=PMCLAP_ABC(filepath,20,0,0.95);
+    [currentAllocation,currentFacilityIndices,fitness,currentEpochs]=PMCLAP_ABC(filepath,20,2,0.95);
     currentTime=toc;
     sumFitness=sumFitness+fitness;
     totalTime=totalTime+currentTime;
@@ -33,12 +33,13 @@ for i=1:noOfExecution
            bestTime=currentTime;
         end
     end
-    if fitness >=42920
+    if fitness >=4520
         achieveCount=achieveCount+1;
     end
     
     fitnessTrack(1,i)=fitness;
     timeTrack(1,i)=currentTime;
+    fprintf('\n Executed %dth\n',i);
 end
 averageFitness=sumFitness/noOfExecution;
 y=0;
@@ -55,7 +56,7 @@ for i=1:noOfExecution
 end
 standardDevTime=(y/noOfExecution)^0.5;
 averageEpochs=totalEpochs/noOfExecution;
-baseDirectory = 'C:\MCLP_GA\818R\';
+baseDirectory = 'C:\MCLP_GA\30R\';
 indiceFileName = sprintf('%s_%s.txt',  'indice', instance);
 allocationFileName=sprintf('%s_%s.txt',  'allocation', instance);
 metadataFileName=sprintf('%s_%s.txt',  'metadata', instance);
@@ -107,10 +108,10 @@ fprintf('\nSuccessfully Executed %s\n',instance);
 %Outputs:- bestFacilityIndices: 1xK matrix, contains facility indices opened for best solution
 %Outputs:- maxNectar: contains the nectar of best soultion achieved
 %Outputs:- epochs: contains the number of iterations executed till convergence
-function[bestAllocation,bestFacilityIndices,fitmax,epochs]=PMCLAP_ABC(filepath,K,b,alpha)
+function[bestAllocation,bestFacilityIndices,maxNectar,epochs]=PMCLAP_ABC(filepath,K,b,alpha)
     P=20;
-    mu=96;
-    r=750;
+    mu=72;
+    r=1.5;
     x=mu*((1-alpha)^(1/(b+2)));
     x = setPrecision(x);
     data=readmatrix(filepath);          %Reading the data matrix of customers; 
@@ -259,7 +260,7 @@ function [colony] = enhanceSolutionVector(colony, P, K, distance, demand, r, m, 
             neighbourhood = randsample(neighbours, 1);
             newColony = colony;
             newColony(i,j) = neighbourhood;
-            if getFitness(newColony(i,:), K, r, demand, distance, m, x,epochs) >= getFitness(colony(i,:), K, r, demand, distance, m, x,epochs)
+            if getFitness1(newColony(i,:), K, r, demand, distance, m, x,epochs) >= getFitness1(colony(i,:), K, r, demand, distance, m, x,epochs)
                 colony(i,:) = newColony(i,:);
             end
         end
@@ -285,7 +286,7 @@ function [eBColony,abandonmentCounter] = employeedBees(eBColony, P, K, distance,
             end
         end
         %greedily chooses between newColony and old eBColony
-        if getFitness(newColony(i,:), K, r, demand, distance, m, x,epochs) > getFitness(eBColony(i,:), K, r, demand, distance, m, x,epochs)
+        if getFitness1(newColony(i,:), K, r, demand, distance, m, x,epochs) > getFitness1(eBColony(i,:), K, r, demand, distance, m, x,epochs)
               eBColony(i,:) = newColony(i,:);
         else
               abandonmentCounter(1,i)=abandonmentCounter(1,i)+1;    % updates the abandonment counter
@@ -458,7 +459,7 @@ function[fitness,allocation]=getFitness3(solution,K,r,demand,distance,m,x)
     for j=1:K
         weightedMatrix=zeros(1,m);
         for i=1:m
-            f=0.01*demand(i);
+            f=0.015*demand(i);
             f=setPrecision(f);
             if ~allocation(1,i) && setPrecision(yM(solution(j),1)+f)<=x && distance(solution(j),i)<=r
                 weightedMatrix(1,i)=demand(i)/distance(solution(j),i);
@@ -510,7 +511,7 @@ function[yM,facilityNo,flag]=getRandomFacility(solution,customer,distance,r,yM,x
   availableFacility=[];
   flag=false;
   facilityNo=-1;
-  f=0.01*demand(customer);
+  f=0.015*demand(customer);
   f=setPrecision(f);
   j=1;
   for i=1:K
@@ -531,7 +532,7 @@ function[yM,facilityNo,flag]=getLessCongestedFacility(solution,customer,distance
   availableFacility=zeros(1,K);
   flag=false;
   facilityNo=-1;
-  f=0.01*demand(customer);
+  f=0.015*demand(customer);
   f=setPrecision(f);
   min=-1;
   for i=1:K

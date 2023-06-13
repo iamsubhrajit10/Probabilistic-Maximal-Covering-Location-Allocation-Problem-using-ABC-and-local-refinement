@@ -35,10 +35,10 @@ for i=1:noOfExecution
         bestAllocation=currentAllocation;
         bestFacilityIndices=currentFacilityIndices;
         if i == 1 || currentTime<bestTime
-           if i==1 || bestEpochs>currentEpochs
-                bestEpochs=currentEpochs;
-           end
            bestTime=currentTime;
+        end
+        if i==1 || bestEpochs>currentEpochs
+                bestEpochs=currentEpochs;
         end
     end
     if fitness >=5330
@@ -274,7 +274,7 @@ function [colony] = enhanceSolutionVector(colony, P, K, distance, demand, r, m, 
             neighbourhood = randsample(neighbours, 1);
             newColony = colony;
             newColony(i,j) = neighbourhood;
-            if getFitness(newColony(i,:), K, r, demand, distance, m, x,epochs) >= getFitness(colony(i,:), K, r, demand, distance, m, x,epochs)
+            if getFitness1(newColony(i,:), K, r, demand, distance, m, x,epochs) >= getFitness1(colony(i,:), K, r, demand, distance, m, x,epochs)
                 colony(i,:) = newColony(i,:);
             end
         end
@@ -300,7 +300,7 @@ function [eBColony,abandonmentCounter] = employeedBees(eBColony, P, K, distance,
             end
         end
         %greedily chooses between newColony and old eBColony
-        if getFitness(newColony(i,:), K, r, demand, distance, m, x,epochs) > getFitness(eBColony(i,:), K, r, demand, distance, m, x,epochs)
+        if getFitness1(newColony(i,:), K, r, demand, distance, m, x,epochs) > getFitness1(eBColony(i,:), K, r, demand, distance, m, x,epochs)
               eBColony(i,:) = newColony(i,:);
         else
               abandonmentCounter(1,i)=abandonmentCounter(1,i)+1;    % updates the abandonment counter
@@ -467,58 +467,58 @@ function[fitness,allocation]=getFitness2(solution,K,r,demand,distance,m,x)
 end
 
 function[fitness,allocation]=getFitness3(solution,K,r,demand,distance,m,x)
-    val=0;
-    yM=zeros(m,1);
-    allocation=zeros(1,m);  
-    for j=1:K
-        weightedMatrix=zeros(1,m);
-        for i=1:m
-            f=0.006*demand(i);
-            f=setPrecision(f);
-            if ~allocation(1,i) && setPrecision(yM(solution(j),1)+f)<=x && distance(solution(j),i)<=r
-                weightedMatrix(1,i)=demand(i)/distance(solution(j),i);
-            end
-        end
-        [~,sortedIndices]=sort(weightedMatrix(:),'descend');
-        count=1;
-        while count <= m
-            if distance(solution(j),sortedIndices(count))>r ||~demand(sortedIndices(count))
-                count=count+1;
-            else
-                f=setPrecision(0.01*demand(sortedIndices(count)));
-                if ~allocation(1,sortedIndices(count)) &&setPrecision(yM(solution(j),1)+f)<=x 
-                    val=val+demand(sortedIndices(count));
-                    demand(sortedIndices(count))=0;
-                    allocation(1,sortedIndices(count))=solution(j);
-                    yM(solution(j))=setPrecision(yM(solution(j),1)+f);
-                end
-                count=count+1;
-            end
-        end
-    end
-    fitness=val;
 %     val=0;
 %     yM=zeros(m,1);
 %     allocation=zeros(1,m);  
-%     for j=1:m
-%         weightedMatrix=zeros(1,K);
-%         f=0.01*demand(j);
-%         f=setPrecision(f);
-%         for i=1:K
-%             if ~allocation(1,j) && setPrecision(yM(solution(i),1)+f)<=x && distance(solution(i),j)<=r
-%                 weightedMatrix(1,i)=demand(j)/distance(solution(i),j);
+%     for j=1:K
+%         weightedMatrix=zeros(1,m);
+%         for i=1:m
+%             f=0.006*demand(i);
+%             f=setPrecision(f);
+%             if ~allocation(1,i) && setPrecision(yM(solution(j),1)+f)<=x && distance(solution(j),i)<=r
+%                 weightedMatrix(1,i)=demand(i)/distance(solution(j),i);
 %             end
 %         end
-%             weightedMatrix=setPrecision(weightedMatrix);
-%             [maxW,index]=max(weightedMatrix(1,:));
-%             if maxW ~=0
-%                 allocation(1,j)=solution(index);
-%                 val=val+demand(j);
-%                 demand(i)=0;
-%                 yM(solution(index),1)=setPrecision(yM(solution(index),1)+f);
+%         [~,sortedIndices]=sort(weightedMatrix(:),'descend');
+%         count=1;
+%         while count <= m
+%             if distance(solution(j),sortedIndices(count))>r ||~demand(sortedIndices(count))
+%                 count=count+1;
+%             else
+%                 f=setPrecision(0.01*demand(sortedIndices(count)));
+%                 if ~allocation(1,sortedIndices(count)) &&setPrecision(yM(solution(j),1)+f)<=x 
+%                     val=val+demand(sortedIndices(count));
+%                     demand(sortedIndices(count))=0;
+%                     allocation(1,sortedIndices(count))=solution(j);
+%                     yM(solution(j))=setPrecision(yM(solution(j),1)+f);
+%                 end
+%                 count=count+1;
 %             end
+%         end
 %     end
 %     fitness=val;
+    val=0;
+    yM=zeros(m,1);
+    allocation=zeros(1,m);  
+    for j=1:m
+        weightedMatrix=zeros(1,K);
+        f=0.006*demand(j);
+        f=setPrecision(f);
+        for i=1:K
+            if ~allocation(1,j) && setPrecision(yM(solution(i),1)+f)<=x && distance(solution(i),j)<=r
+                weightedMatrix(1,i)=demand(j)/distance(solution(i),j);
+            end
+        end
+            weightedMatrix=setPrecision(weightedMatrix);
+            [maxW,index]=max(weightedMatrix(1,:));
+            if maxW ~=0
+                allocation(1,j)=solution(index);
+                val=val+demand(j);
+                demand(i)=0;
+                yM(solution(index),1)=setPrecision(yM(solution(index),1)+f);
+            end
+    end
+    fitness=val;
 end
 
 function[yM,facilityNo,flag]=getRandomFacility(solution,customer,distance,r,yM,x,demand,K)
